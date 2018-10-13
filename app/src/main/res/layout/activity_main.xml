@@ -7,6 +7,7 @@
     tools:context=".MainActivity"
     android:background="@color/colorPrimary">
 
+    <!-- CLARIFAI BUTTON -->
     <Button
         android:id="@+id/btn_determine"
         android:layout_width="match_parent"
@@ -16,6 +17,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_margin="10dp"/>
 
+    <!-- TAKE PHOTO BUTTON -->
     <Button
         android:id="@+id/btn_picture"
         android:layout_width="match_parent"
@@ -25,6 +27,7 @@
         app:layout_constraintBottom_toTopOf="@id/btn_determine"
         android:layout_margin="10dp"/>
 
+    <!-- FOOD IMAGE -->
     <ImageView
         android:id="@+id/iv_test"
         android:layout_width="match_parent"
@@ -35,6 +38,7 @@
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toTopOf="@id/btn_picture" />
 
+    <!-- white border -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -44,6 +48,7 @@
         app:layout_constraintBottom_toTopOf="@id/btn_picture"
         android:padding="10dp"/>
 
+    <!-- another border lol -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0dp"

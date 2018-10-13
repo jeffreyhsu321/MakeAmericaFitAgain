@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ProfileActivity">
+
+    <!-- HEADER -->
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/layout_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/layout_neck"
+        android:background="@drawable/header_gradient"
+        android:padding="10dp">
+
+        <!-- PROFILE PICTURE -->
+        <RelativeLayout
+            android:id="@+id/iv_pp_wrapper"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/profile_pic_border"
+            android:padding="10dp">
+            <ImageView
+                android:id="@+id/iv_pp"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:scaleType="centerInside"
+                android:background="@drawable/profile_pic_circle"
+                android:layout_centerHorizontal="true"/>
+        </RelativeLayout>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <!-- NECK -->
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/layout_neck"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        app:layout_constraintVertical_weight="10"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintTop_toBottomOf="@id/layout_header"
+        app:layout_constraintBottom_toTopOf="@id/layout_body"
+        android:background="@drawable/gradient_neck">
+
+
+
+    </android.support.constraint.ConstraintLayout>
+
+    <!-- BODY -->
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/layout_body"
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        app:layout_constraintVertical_weight="60"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintTop_toBottomOf="@id/layout_neck"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- NAME -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tnl_Name"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            app:layout_constraintTop_toTopOf="parent">
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/et_Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:hint="NAME"
+                android:textSize="14sp"
+                android:singleLine="true"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <!-- BUILDING -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tnl_Building"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            app:layout_constraintTop_toBottomOf="@id/tnl_Name">
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/et_Building"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="BUILDING"
+                android:textSize="14sp"
+                android:singleLine="true"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <!-- ROOM -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tnl_Room"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            app:layout_constraintTop_toBottomOf="@id/tnl_Building">
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/et_Room"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="ROOM"
+                android:textSize="14sp"
+                android:singleLine="true"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <!-- APPLY -->
+        <Button
+            android:id="@+id/btn_Apply"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:text="Apply"
+            android:textSize="18sp"
+            app:layout_constraintTop_toBottomOf="@id/tnl_Room"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <!-- GUIDELINE HORIZONTAL -->
+        <android.support.constraint.Guideline
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/guideline"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.constraint.ConstraintLayout>
