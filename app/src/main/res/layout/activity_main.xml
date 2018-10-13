@@ -27,30 +27,34 @@
         android:layout_margin="10dp"
         android:background="@drawable/btn_border_white"
         android:text="Take a Photo"
+        app:layout_constraintTop_toBottomOf="@drawable/food_border"
         tools:layout_editor_absoluteX="5dp"
         tools:layout_editor_absoluteY="379dp" />
 
     <Button
         android:id="@+id/btn_profile"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="60dp"
         android:layout_margin="10dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/btn_border_white"
         android:text="Profile"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="93dp" />
+        app:layout_constraintRight_toLeftOf="@id/btn_photo"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
     <Button
         android:id="@+id/btn_photo"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="60dp"
         android:layout_margin="10dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/btn_border_white"
         android:text="Snap"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/btn_profile"
-        tools:layout_editor_absoluteX="46dp" />
+        app:layout_constraintRight_toRightOf="parent"/>
+
 
     <!-- FOOD IMAGE -->
     <ImageView
@@ -78,8 +82,8 @@
 
     <!-- another border lol -->
     <ImageView
-        android:layout_width="374dp"
-        android:layout_height="377dp"
+        android:layout_width="match_parent"
+        android:layout_height="374dp"
         android:layout_margin="5dp"
         android:background="@drawable/food_border2"
         android:padding="10dp"
