@@ -11,13 +11,14 @@
     <Button
         android:id="@+id/btn_determine"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="51dp"
         android:layout_margin="10dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/btn_border_white"
         android:text="Determine Calorie"
+
         app:layout_constraintBottom_toTopOf="@id/btn_profile"
-        tools:layout_editor_absoluteX="10dp" />
+        app:layout_constraintTop_toBottomOf="@id/btn_picture" />
 
     <!-- TAKE PHOTO BUTTON -->
     <Button
@@ -25,12 +26,12 @@
         android:layout_width="match_parent"
         android:layout_height="51dp"
         android:layout_margin="10dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/btn_border_white"
         android:text="Take a Photo"
-        app:layout_constraintTop_toBottomOf="@drawable/food_border"
-        tools:layout_editor_absoluteX="5dp"
-        tools:layout_editor_absoluteY="379dp" />
+        app:layout_constraintTop_toBottomOf="@id/iv_test" />
 
+    <!-- Profile Button -->
     <Button
         android:id="@+id/btn_profile"
         android:layout_width="150dp"
