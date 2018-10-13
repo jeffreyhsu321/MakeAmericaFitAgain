@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements
     //declarations
     Button btn_determine;
     Button btn_picture;
+    Button btn_profile;
     TextView tv_test;
     ImageView iv_test;
 
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements
         //init
         btn_determine = findViewById(R.id.btn_determine);
         btn_picture = findViewById(R.id.btn_picture);
+        btn_profile = findViewById(R.id.btn_profile);
         iv_test = findViewById(R.id.iv_test);
         mContext = this.getApplicationContext();
         dialog = new ProgressDialog(this);
@@ -76,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements
         //attach listener
         btn_determine.setOnClickListener(this);
         btn_picture.setOnClickListener(this);
+        btn_profile.setOnClickListener(this);
     }
 
 
@@ -277,6 +280,8 @@ public class MainActivity extends AppCompatActivity implements
                 dispatchTakePictureIntent();
                 break;
             case R.id.btn_profile:
+                Intent test = new Intent(getApplicationContext(), ProfileActivity.class);
+                startActivity(test);
                 break;
             default:
                 break;
