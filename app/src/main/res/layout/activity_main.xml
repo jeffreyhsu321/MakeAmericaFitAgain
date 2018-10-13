@@ -41,11 +41,11 @@
         android:background="@drawable/btn_border_white"
         android:text="Profile"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/btn_photo"
+        app:layout_constraintRight_toLeftOf="@id/btn_snap"
         app:layout_constraintLeft_toLeftOf="parent" />
 
     <Button
-        android:id="@+id/btn_photo"
+        android:id="@+id/btn_snap"
         android:layout_width="150dp"
         android:layout_height="60dp"
         android:layout_margin="10dp"

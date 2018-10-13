@@ -4,11 +4,14 @@ public class Food {
 
     //attr
     String name;
-    int calories;
+    int calories; //calories per a hundred grams
 
     public Food() {
-        name = "N/A";
-        calories = 0;
+        this("N/A", 0);
+    }
+    public Food(String name)
+    {
+        this(name, 0);
     }
 
     public Food(String name, int calories){
