@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFBC42</color>      <!-- yellow orange -->
+    <color name="colorPrimaryDark">#8F2D56</color>  <!-- dark raspberry -->
+    <color name="colorAccent">#D81159</color>       <!-- ruby -->
+</resources>

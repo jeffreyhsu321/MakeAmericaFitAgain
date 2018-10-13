@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "818761432487",
+    "firebase_url": "https://bananas-cad25.firebaseio.com",
+    "project_id": "bananas-cad25",
+    "storage_bucket": "bananas-cad25.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:818761432487:android:4ab770de681a9868",
+        "android_client_info": {
+          "package_name": "com.notfound.makeamericafitagain"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "818761432487-1uucv1h8h9for1iop8b1v6sto2562bml.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.notfound.makeamericafitagain",
+            "certificate_hash": "18bea4fbc3df3c907467b902c1dc0e127a4754e5"
+          }
+        },
+        {
+          "client_id": "818761432487-e5o4o59m8t3utv0l9cifs2s2n1j5i7qk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHdDrKBjdDlW2orrjP93Mdrmp8C_mkxV8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "818761432487-e5o4o59m8t3utv0l9cifs2s2n1j5i7qk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
