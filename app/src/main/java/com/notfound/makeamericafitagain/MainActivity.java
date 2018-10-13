@@ -276,6 +276,8 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.btn_picture:
                 dispatchTakePictureIntent();
                 break;
+            case R.id.btn_profile:
+                break;
             default:
                 break;
 
