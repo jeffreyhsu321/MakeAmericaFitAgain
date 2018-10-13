@@ -1,11 +1,13 @@
 package com.notfound.makeamericafitagain;
 
 import android.app.ProgressDialog;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -36,6 +38,10 @@ public class ProfileActivity extends AppCompatActivity implements
 
     User userObj;
 
+    CircleBar cb_calorie;
+
+    int progressStep = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,8 +58,40 @@ public class ProfileActivity extends AppCompatActivity implements
 
         dialog = new ProgressDialog(this);
 
+        cb_calorie = findViewById(R.id.cb_calorie);
+        cb_calorie.setProgress(0);
+
         //attach listeners
         btn_Apply.setOnClickListener(this);
+
+
+        //set progress bar
+        refUser.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                final int progress = (dataSnapshot.hasChild("calorie_today")) ? Integer.parseInt(dataSnapshot.child("calorie_today").getValue(String.class)) : 0;
+                progressStep = 0;
+                final Handler mUpdater = new Handler();
+                Runnable mUpdateView = new Runnable() {
+                    @Override
+                    public void run() {
+                        cb_calorie.setProgress(progressStep);
+                        if(progressStep < progress){
+                            progressStep++;
+                        } else {
+                            mUpdater.removeCallbacksAndMessages(null);
+                        }
+                        mUpdater.postDelayed(this, 10);
+                    }
+                };
+                mUpdateView.run();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+
+        });
 
     }
 
