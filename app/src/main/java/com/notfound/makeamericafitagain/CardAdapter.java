@@ -23,7 +23,9 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static com.google.firebase.storage.FirebaseStorage.getInstance;
 
@@ -51,6 +53,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
     ImageView iv_food4;
     ImageView iv_food5;
 
+    TextView tv_title;
+
     FirebaseAuth mAuth;
     FirebaseUser mUser;
     StorageReference storageRef;
@@ -60,6 +64,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
     int counter = 0;
 
     boolean isColor = false;
+
+    List<String> adjs;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -82,6 +88,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
         refRoot = FirebaseDatabase.getInstance().getReference();
         refUser = refRoot.child(mUser.getUid());
         storageRef = getInstance().getReference();
+
+        adjsFill();
     }
 
     // Create new views (invoked by the layout manager)
@@ -103,6 +111,9 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
         layout_COLORME = holder.mCardView.findViewById(R.id.layout_COLORME);
         layout_COLORME.setBackgroundResource((isColor)?R.drawable.card_bg1:R.drawable.card_bg2);
 
+        tv_title = holder.mCardView.findViewById(R.id.tv_title);
+        tv_title.setText(randomAdjs() + " " + mDataset.get(position).getFood(0).getName());
+
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         tv_food1 = holder.mCardView.findViewById(R.id.tv_food1);
@@ -121,6 +132,20 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
         tv_food3.setTextColor((isColor) ? Color.parseColor("#ffffff") : Color.parseColor("#333333"));
         tv_food4.setTextColor((isColor) ? Color.parseColor("#ffffff") : Color.parseColor("#333333"));
         tv_food5.setTextColor((isColor) ? Color.parseColor("#ffffff") : Color.parseColor("#333333"));
+
+        tv_title.setTextColor((isColor) ? Color.parseColor("#ffffff") : Color.parseColor("#333333"));
+
+        tv_calories1 = holder.mCardView.findViewById(R.id.tv_calories1);
+        tv_calories2 = holder.mCardView.findViewById(R.id.tv_calories2);
+        tv_calories3 = holder.mCardView.findViewById(R.id.tv_calories3);
+        tv_calories4 = holder.mCardView.findViewById(R.id.tv_calories4);
+        tv_calories5 = holder.mCardView.findViewById(R.id.tv_calories5);
+
+        tv_calories1.setTextColor((isColor) ? Color.parseColor("#ffffff") : Color.parseColor("#333333"));
+        tv_calories2.setTextColor((isColor) ? Color.parseColor("#ffffff") : Color.parseColor("#333333"));
+        tv_calories3.setTextColor((isColor) ? Color.parseColor("#ffffff") : Color.parseColor("#333333"));
+        tv_calories4.setTextColor((isColor) ? Color.parseColor("#ffffff") : Color.parseColor("#333333"));
+        tv_calories5.setTextColor((isColor) ? Color.parseColor("#ffffff") : Color.parseColor("#333333"));
 
         tv_calories1 = holder.mCardView.findViewById(R.id.tv_calories1);
         tv_calories1.setText(mDataset.get(position).getFood(0).getCalories());
@@ -204,5 +229,36 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
     @Override
     public int getItemCount() {
         return mDataset.size();
+    }
+
+    public void adjsFill(){
+        adjs = new ArrayList<>();
+        adjs.add("Flaming");
+        adjs.add("Bland");
+        adjs.add("Amazing");
+        adjs.add("Jaw-busting");
+        adjs.add("Hot");
+        adjs.add("Mild");
+        adjs.add("Explosive");
+        adjs.add("Home-made");
+        adjs.add("Impossible");
+        adjs.add("Hacking");
+        adjs.add("Flaming");
+        adjs.add("Bland");
+        adjs.add("Amazing");
+        adjs.add("Jaw-busting");
+        adjs.add("Hot");
+        adjs.add("Mild");
+        adjs.add("Explosive");
+        adjs.add("Home-made");
+        adjs.add("Impossible");
+        adjs.add("Hacking");
+    }
+
+    public String randomAdjs(){
+        Random random = new Random();
+        int randomNum = random.nextInt((adjs.size() - 1) + 1) + 1;
+
+        return adjs.get(randomNum);
     }
 }

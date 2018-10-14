@@ -180,7 +180,8 @@
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/layout_foodlist"
-                android:layout_margin="10dp"/>
+                android:layout_margin="10dp"
+                android:src="@drawable/loading"/>
 
         </android.support.constraint.ConstraintLayout>
 
