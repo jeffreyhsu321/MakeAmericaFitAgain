@@ -352,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements
                                 }
 
                                 Toast.makeText(mContext, "Logged in as " +
-                                        (userDataResponse.getData().getMe().getDisplayName()),
+                                                (userDataResponse.getData().getMe().getDisplayName()),
                                         Toast.LENGTH_LONG).show();
 
                                 /*
@@ -373,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements
                         Toast.makeText(mContext, "Logged in failed", Toast.LENGTH_LONG);
                     }
                 }
-
+                break;
             default:
                 break;
 
