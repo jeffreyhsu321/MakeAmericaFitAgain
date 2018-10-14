@@ -21,7 +21,7 @@ public class Food {
     }
 
     public String getCalories() {
-        return calories;
+        return this.calories;
     }
 
     public void setCalories(String calories) {
@@ -30,5 +30,9 @@ public class Food {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean equals(Food other, boolean thing){
+        return this.name.equals(other.getName());
     }
 }

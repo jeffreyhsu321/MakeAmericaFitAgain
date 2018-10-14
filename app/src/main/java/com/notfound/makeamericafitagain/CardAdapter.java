@@ -2,7 +2,9 @@ package com.notfound.makeamericafitagain;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -31,11 +33,18 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
 
     String image_name;
 
+    ConstraintLayout layout_COLORME;
+
     TextView tv_food1;
     TextView tv_food2;
     TextView tv_food3;
     TextView tv_food4;
     TextView tv_food5;
+    TextView tv_calories1;
+    TextView tv_calories2;
+    TextView tv_calories3;
+    TextView tv_calories4;
+    TextView tv_calories5;  
     ImageView iv_food1;
     ImageView iv_food2;
     ImageView iv_food3;
@@ -49,6 +58,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
     DatabaseReference refUser;
 
     int counter = 0;
+
+    boolean isColor = false;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -88,6 +99,10 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
+
+        layout_COLORME = holder.mCardView.findViewById(R.id.layout_COLORME);
+        layout_COLORME.setBackgroundResource((isColor)?R.drawable.card_bg1:R.drawable.card_bg2);
+
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         tv_food1 = holder.mCardView.findViewById(R.id.tv_food1);
@@ -100,6 +115,23 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
         tv_food4.setText(mDataset.get(position).getFood(3).getName());
         tv_food5 = holder.mCardView.findViewById(R.id.tv_food5);
         tv_food5.setText(mDataset.get(position).getFood(4).getName());
+
+        tv_food1.setTextColor((isColor) ? Color.parseColor("#ffffff") : Color.parseColor("#333333"));
+        tv_food2.setTextColor((isColor) ? Color.parseColor("#ffffff") : Color.parseColor("#333333"));
+        tv_food3.setTextColor((isColor) ? Color.parseColor("#ffffff") : Color.parseColor("#333333"));
+        tv_food4.setTextColor((isColor) ? Color.parseColor("#ffffff") : Color.parseColor("#333333"));
+        tv_food5.setTextColor((isColor) ? Color.parseColor("#ffffff") : Color.parseColor("#333333"));
+
+        tv_calories1 = holder.mCardView.findViewById(R.id.tv_calories1);
+        tv_calories1.setText(mDataset.get(position).getFood(0).getCalories());
+        tv_calories2 = holder.mCardView.findViewById(R.id.tv_calories2);
+        tv_calories2.setText(mDataset.get(position).getFood(1).getCalories());
+        tv_calories3 = holder.mCardView.findViewById(R.id.tv_calories3);
+        tv_calories3.setText(mDataset.get(position).getFood(2).getCalories());
+        tv_calories4 = holder.mCardView.findViewById(R.id.tv_calories4);
+        tv_calories4.setText(mDataset.get(position).getFood(3).getCalories());
+        tv_calories5 = holder.mCardView.findViewById(R.id.tv_calories5);
+        tv_calories5.setText(mDataset.get(position).getFood(4).getCalories());
 
         String image_name = mDataset.get(position).getImage_name();
         switch(position){
@@ -162,6 +194,10 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
                 }
             });
         } catch(IOException ie) {}
+
+
+
+        isColor = !isColor;
     }
 
     // Return the size of your dataset (invoked by the layout manager)

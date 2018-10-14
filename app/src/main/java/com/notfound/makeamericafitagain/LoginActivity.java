@@ -1,5 +1,6 @@
 package com.notfound.makeamericafitagain;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -29,6 +30,8 @@ public class LoginActivity extends AppCompatActivity implements
     TextInputEditText et_Password;
     FirebaseAuth mAuth;
 
+    ProgressDialog dialog;
+
     //debug
     String email_admin = "notfound@gmail.com";
     String password_admin = "123456";
@@ -52,6 +55,7 @@ public class LoginActivity extends AppCompatActivity implements
         et_Email = findViewById(R.id.et_Email);
         et_Password = findViewById(R.id.et_Password);
         mAuth = FirebaseAuth.getInstance();
+        dialog = new ProgressDialog(this);
 
         //set up listeners
         btn_Login.setOnClickListener(this);
@@ -71,6 +75,8 @@ public class LoginActivity extends AppCompatActivity implements
             Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
             return;
         } else {
+            dialog.setMessage("Getting you into bananas...");
+            dialog.show();
             mAuth.signInWithEmailAndPassword(et_Email.getText().toString(), et_Password.getText().toString())
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -79,6 +85,7 @@ public class LoginActivity extends AppCompatActivity implements
                                 Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
                                 finish();
                                 Intent i_main = new Intent(getApplicationContext(), MainActivity.class);
+                                dialog.dismiss();
                                 finish();
                                 startActivity(i_main);
                             } else {
@@ -90,6 +97,8 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     public void quickLoginAdmin(){
+        dialog.setMessage("Hacking through bananas...");
+        dialog.show();
         mAuth.signInWithEmailAndPassword(email_admin, password_admin)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -98,6 +107,7 @@ public class LoginActivity extends AppCompatActivity implements
                             Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
                             finish();
                             Intent i_main = new Intent(getApplicationContext(), MainActivity.class);
+                            dialog.dismiss();
                             finish();
                             startActivity(i_main);
                         } else {

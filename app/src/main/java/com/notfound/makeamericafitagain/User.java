@@ -20,8 +20,8 @@ public class User {
         this.meals = "0";
     }
 
-    public void updateUserInfo(String name){
-        this.name = name;
+    public void updateUserInfo(String calorie_goal){
+        this.calorie_goal = calorie_goal;
     }
 
     public void updateCalorie(int calorie){

@@ -43,7 +43,7 @@
             <!-- DAILY CALORIE TEXT -->
             <TextView
                 android:id="@+id/tv_calorie"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
                 android:textAlignment="center"
@@ -53,6 +53,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- GOAL TEXT -->
+            <TextView
+                android:id="@+id/tv_goal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" / 0"
+                android:textAlignment="center"
+                android:textColor="#AAAAAA"
+                android:textSize="12sp"
+                android:padding="5dp"
+                app:layout_constraintStart_toEndOf="@id/tv_calorie"
+                app:layout_constraintBottom_toBottomOf="@id/tv_calorie"/>
 
             <!-- tiny text -->
             <TextView
@@ -95,27 +108,35 @@
         app:layout_constraintTop_toBottomOf="@id/layout_neck"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- NAME -->
+        <!-- GOAL -->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/tnl_Name"
+            android:id="@+id/tnl_goal"
             android:layout_marginTop="20dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginRight="70dp"
             app:layout_constraintTop_toTopOf="parent">
             <android.support.design.widget.TextInputEditText
-                android:id="@+id/et_Name"
+                android:id="@+id/et_goal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:hint="NAME"
+                android:hint="Set Calorie Goal"
                 android:textSize="14sp"
                 android:singleLine="true"
                 android:textColor="#FFFFFF"
                 android:backgroundTint="#FFFFFF"
                 android:textColorHint="#AAAAAA"/>
         </android.support.design.widget.TextInputLayout>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_apply"
+            app:layout_constraintLeft_toRightOf="@id/tnl_goal"
+            app:layout_constraintBottom_toBottomOf="@id/tnl_goal"
+            android:src="@drawable/ic_apply"
+            android:padding="5dp"
+            android:background="@android:color/transparent"/>
 
         <!-- HISTORY -->
         <Button
@@ -126,7 +147,8 @@
             android:layout_marginRight="30dp"
             android:text="Past Meals"
             android:textSize="18sp"
-            android:background="@drawable/btn_border_white"
+            android:background="@drawable/btn_border_accent"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_margin="10dp"/>
 

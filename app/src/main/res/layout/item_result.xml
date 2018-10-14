@@ -24,7 +24,7 @@
         android:padding="10dp"/>
 
     <TextView
-        android:id="@+id/tv_calorie"
+        android:id="@+id/tv_calories"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"

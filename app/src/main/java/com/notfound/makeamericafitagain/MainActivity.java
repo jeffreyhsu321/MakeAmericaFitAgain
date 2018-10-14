@@ -3,6 +3,7 @@ package com.notfound.makeamericafitagain;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -39,14 +40,20 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Random;
+import java.util.StringTokenizer;
 
 import clarifai2.api.ClarifaiBuilder;
 import clarifai2.api.ClarifaiClient;
@@ -78,6 +85,9 @@ public class MainActivity extends AppCompatActivity implements
 
     ProgressDialog dialog;
 
+    static List<Food> list_food_cal;
+    int calsToBeConsumed = 0;
+
     //saving photo to Firebase
     Uri photoURI;
     FirebaseAuth mAuth;
@@ -90,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements
     StorageReference foodRef;
     StorageReference foodImageRef;
     UploadTask uploadTask;
+
+    boolean doneUpdateCal = false;
 
 
     boolean hasMadeMeal = false;
@@ -124,6 +136,57 @@ public class MainActivity extends AppCompatActivity implements
         btn_profile.setOnClickListener(this);
         btn_picture.setOnClickListener(this);
         btn_snap.setOnClickListener(this);
+
+
+        //JASON'S FOOD/CAL DATA
+        try {
+            AssetManager assetManager = getAssets();
+
+            InputStream in = assetManager.open("Temp.csv");
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+            StringTokenizer st = null;
+            ArrayList<Food> foodList = new ArrayList<Food>();
+            while (br.ready()) {
+                try {
+                    st = new StringTokenizer(br.readLine(), ",");
+                    String name = st.nextToken().split("\\(")[0];
+                    String calories = st.nextToken().split(" ")[0];
+                    Log.d("filesbla", name + " " + calories);
+                    Food f = new Food(name, calories);
+                    foodList.add(f);
+                } catch (NoSuchElementException e) {
+                    continue;
+                } catch (NumberFormatException e) {
+                    continue;
+                }
+            }
+            refRoot.child("masterlist").setValue(foodList);
+            Log.d("filesbla", "Successful");
+        }
+        catch(IOException e)
+        {
+            Log.d("testing", e.toString());
+        }
+
+        //grab food list cal
+        refRoot.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                list_food_cal = new ArrayList<>();
+                for(int i = 0; i < dataSnapshot.child("masterlist").getChildrenCount(); i++){
+                    String name = dataSnapshot.child("masterlist").child(String.valueOf(i)).child("name").getValue(String.class);
+                    String calories = dataSnapshot.child("masterlist").child(String.valueOf(i)).child("calories").getValue(String.class);
+                    Food food = new Food(name, calories);
+                    list_food_cal.add(food);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+
+        });
     }
 
 
@@ -229,6 +292,8 @@ public class MainActivity extends AppCompatActivity implements
      * camera activity
      */
     private void dispatchTakePictureIntent() {
+        doneUpdateCal = false;
+
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -352,6 +417,55 @@ public class MainActivity extends AppCompatActivity implements
                 Toast.makeText(getApplicationContext(), "Upload successful!", Toast.LENGTH_SHORT).show();
             }
         });
+
+
+
+            //COMPARE CAL VALUES
+            //retrieve cal values
+            Random rand = new Random();
+            for(int i = 0; i < list_foods.size(); i++){
+                Food food = list_foods.get(i);
+                //iterate through masterlist
+                for(Food food_other : list_food_cal){
+                    if(food.equals(food_other, true) && !food_other.getCalories().equals("")){
+                        food.setCalories(food_other.getCalories());
+                        list_foods.set(i, food);
+                        calsToBeConsumed += Integer.parseInt(food.getCalories());
+                    } else {
+                    }
+                }
+            }
+            for(int i = 0; i < list_foods.size(); i++){
+                Food food = list_foods.get(i);
+                //iterate through to fill in random values
+                if(food.getCalories().equals("100")){
+                    int n = rand.nextInt(50) + 1;
+                    food.setCalories(String.valueOf(n));
+                    list_foods.set(i, food);
+                    calsToBeConsumed += n;
+                }
+            }
+
+            //update cal values for user
+            refUser.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(!doneUpdateCal){
+                        int cal = Integer.parseInt(dataSnapshot.child("calorie_today").getValue(String.class));
+                        cal += calsToBeConsumed;
+                        refUser.child("calorie_today").setValue(String.valueOf(cal));
+                    }
+
+                    doneUpdateCal = true;
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+
+            });
+
+
 
         hasMadeMeal = false;
 

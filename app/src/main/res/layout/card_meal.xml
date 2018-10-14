@@ -11,9 +11,11 @@
     card_view:cardElevation="10dp">
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_COLORME"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@drawable/card_bg1">
 
             <!-- TITLE -->
             <TextView
@@ -34,7 +36,8 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/tv_title"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/iv_food">
+                app:layout_constraintEnd_toStartOf="@id/iv_food"
+                >
 
                 <!-- HORIZONTAL LINE -->
                 <View android:background="#000000"
@@ -51,6 +54,14 @@
                     android:text="Banana 1"
                     android:padding="2dp"
                     android:layout_margin="10dp"/>
+                <TextView
+                    android:id="@+id/tv_calories1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@id/tv_food1"
+                    android:text="100"
+                    android:padding="2dp"
+                    android:gravity="right"/>
 
                 <!-- HORIZONTAL LINE -->
                 <View android:background="#444444"
@@ -68,6 +79,14 @@
                     android:text="Banana 1"
                     android:padding="2dp"
                     android:layout_margin="10dp"/>
+                <TextView
+                    android:id="@+id/tv_calories2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@id/tv_food2"
+                    android:text="100"
+                    android:padding="2dp"
+                    android:gravity="right"/>
 
                 <!-- HORIZONTAL LINE -->
                 <View android:background="#444444"
@@ -85,6 +104,14 @@
                     android:text="Banana 1"
                     android:padding="2dp"
                     android:layout_margin="10dp"/>
+                <TextView
+                    android:id="@+id/tv_calories3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@id/tv_food3"
+                    android:text="100"
+                    android:padding="2dp"
+                    android:gravity="right"/>
 
                 <!-- HORIZONTAL LINE -->
                 <View android:background="#444444"
@@ -102,6 +129,14 @@
                     android:text="Banana 1"
                     android:padding="2dp"
                     android:layout_margin="10dp"/>
+                <TextView
+                    android:id="@+id/tv_calories4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@id/tv_food4"
+                    android:text="100"
+                    android:padding="2dp"
+                    android:gravity="right"/>
 
                 <!-- HORIZONTAL LINE -->
                 <View android:background="#444444"
@@ -119,6 +154,14 @@
                     android:text="Banana 1"
                     android:padding="2dp"
                     android:layout_margin="10dp"/>
+                <TextView
+                    android:id="@+id/tv_calories5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@id/tv_food5"
+                    android:text="100"
+                    android:padding="2dp"
+                    android:gravity="right"/>
 
                 <!-- HORIZONTAL LINE -->
                 <View android:background="#444444"
@@ -136,7 +179,8 @@
                 android:layout_width="0dp"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/layout_foodlist"/>
+                app:layout_constraintStart_toEndOf="@id/layout_foodlist"
+                android:layout_margin="10dp"/>
 
         </android.support.constraint.ConstraintLayout>
 
