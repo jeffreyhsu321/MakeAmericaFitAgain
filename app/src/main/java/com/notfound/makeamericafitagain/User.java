@@ -9,10 +9,13 @@ public class User {
 
     String calorie_today;
 
+    String meals;
+
     public User(String email, String password){
         this.email = email;
         this.password = password;
         this.calorie_today = "0";
+        this.meals = "0";
     }
 
     public void updateUserInfo(String name){

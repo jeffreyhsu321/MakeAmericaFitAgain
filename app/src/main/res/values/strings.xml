@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">bananas</string>
+    <string name="logged_in">user logged in</string>
 </resources>
