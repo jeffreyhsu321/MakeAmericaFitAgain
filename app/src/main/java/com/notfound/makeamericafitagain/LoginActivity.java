@@ -11,6 +11,7 @@ import android.transition.Fade;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,7 +24,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     //declaration
     Button btn_Login;
-    Button btn_quickLogin;
+    ImageButton btn_quickLogin;
     TextInputEditText et_Email;
     TextInputEditText et_Password;
     FirebaseAuth mAuth;

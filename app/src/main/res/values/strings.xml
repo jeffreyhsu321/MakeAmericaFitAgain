@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">bananas</string>
     <string name="logged_in">user logged in</string>
+    <string name="title_activity_history">Your Meals</string>
+
+    <string name="action_settings">Settings</string>
 </resources>

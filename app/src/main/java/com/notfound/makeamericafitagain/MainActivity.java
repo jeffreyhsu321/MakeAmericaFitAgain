@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements
     ImageButton btn_snap;
     ImageView iv_test;
 
-    Bitmap imageBitmap;
+    static Bitmap imageBitmap;
 
     private Context mContext;
 
@@ -140,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements
         uploadImage(iv_test);
 
         //intent to result activity
+        dialog.dismiss();
         Intent i_result = new Intent(this, ResultActivity.class);
         startActivity(i_result);
 
@@ -158,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements
         int list_size = result.get(0).data().size();
         for(int i = 0; i < 5; i++){
             //instantiate food object and append
-            list_foods.add(new Food(result.get(0).data().get(i).name()));
+            list_foods.add(new Food(result.get(0).data().get(i).name(), "100"));
         }
 
     }
@@ -203,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements
                 );
                 List<ClarifaiOutput<Concept>> result = request.executeSync().get();
 
+                dialog.dismiss();
                 return result;
 
 
@@ -285,6 +287,10 @@ public class MainActivity extends AppCompatActivity implements
         return image;
     }
 
+    public void onPause(){
+        super.onPause();
+        dialog.dismiss();
+    }
 
     private void setPic() {
         // Get the dimensions of the View
@@ -398,6 +404,7 @@ public class MainActivity extends AppCompatActivity implements
                 dispatchTakePictureIntent();
                 break;
             case R.id.btn_profile:
+                dialog.dismiss();
                 Intent i_profile = new Intent(getApplicationContext(), ProfileActivity.class);
                 startActivity(i_profile);
                 break;

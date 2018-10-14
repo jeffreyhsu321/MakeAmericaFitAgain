@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#FFCC6D</color>      <!-- topaz -->
+    <color name="colorPrimary">#DDCE27</color>      <!-- citrine -->
     <color name="colorPrimaryDark">#8F2D56</color>  <!-- dark raspberry -->
     <color name="colorAccent">#D81159</color>       <!-- ruby -->
+
+    <color name="colorSnap">#F7E401</color>         <!-- snapchat -->
 </resources>

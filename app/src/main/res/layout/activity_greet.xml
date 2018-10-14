@@ -27,11 +27,13 @@
     <ImageView
         android:id="@+id/iv_logo"
         android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_height="50dp"
 
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tv_logo"
+
+        android:src="@drawable/ic_logo"
 
         android:transitionName="iv_logo"/>
 

@@ -8,6 +8,7 @@ public class User {
     String name;
 
     String calorie_today;
+    String calorie_goal;
 
     String meals;
 
@@ -15,6 +16,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.calorie_today = "0";
+        this.calorie_goal = "2000";
         this.meals = "0";
     }
 

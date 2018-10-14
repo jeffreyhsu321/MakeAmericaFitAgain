@@ -23,27 +23,20 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <ImageView
-        android:id="@+id/iv_logo"
+
+    <!-- QUICK LOGIN BUTTON -->
+    <ImageButton
+        android:id="@+id/btn_quickLogin"
         android:layout_width="80dp"
         android:layout_height="80dp"
-
         app:layout_constraintBottom_toTopOf="@id/tnl_Email"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-
-    <!-- QUICK LOGIN BUTTON -->
-    <Button
-        android:id="@+id/btn_quickLogin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/iv_logo" />
+        android:background="@android:color/transparent"
+
+        android:src="@drawable/ic_icon"
+        android:scaleType="fitCenter"/>
 
 
     <android.support.design.widget.TextInputLayout

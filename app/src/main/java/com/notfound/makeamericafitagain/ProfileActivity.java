@@ -1,6 +1,7 @@
 package com.notfound.makeamericafitagain;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
@@ -29,7 +30,7 @@ public class ProfileActivity extends AppCompatActivity implements
     //declaration
     TextInputEditText et_Name;
     TextView tv_calorie;
-    Button btn_Apply;
+    Button btn_history;
 
     FirebaseAuth mAuth;
     FirebaseUser mUser;
@@ -48,6 +49,8 @@ public class ProfileActivity extends AppCompatActivity implements
 
     int speed;
 
+    int progress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +59,7 @@ public class ProfileActivity extends AppCompatActivity implements
         //init
         et_Name = findViewById(R.id.et_Name);
         tv_calorie = findViewById(R.id.tv_calorie);
-        btn_Apply = findViewById(R.id.btn_Apply);
+        btn_history = findViewById(R.id.btn_history);
 
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
@@ -69,7 +72,7 @@ public class ProfileActivity extends AppCompatActivity implements
         cb_calorie.setProgress(0);
 
         //attach listeners
-        btn_Apply.setOnClickListener(this);
+        btn_history.setOnClickListener(this);
 
 
         //set progress bar
@@ -78,10 +81,11 @@ public class ProfileActivity extends AppCompatActivity implements
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int calorie_today = (dataSnapshot.hasChild("calorie_today")) ? Integer.parseInt(dataSnapshot.child("calorie_today").getValue(String.class)) : 0;
                 int calorie_goal = (dataSnapshot.hasChild("calorie_goal")) ? Integer.parseInt(dataSnapshot.child("calorie_goal").getValue(String.class)) : 1;
-                final int progress = calorie_today/calorie_goal;
+                progress = (int)((float)calorie_today / (float)calorie_goal*100);
+                Log.d("d","JEFF   " + progress);
                 progressStep = 0;
                 calorieMeter = 0;
-                calorieMeterStep = calorie_today / progress;
+                calorieMeterStep = (progress != 0) ? (calorie_today / progress) : 0;
 
                 speed = 10;
 
@@ -160,7 +164,9 @@ public class ProfileActivity extends AppCompatActivity implements
 
     public void onClick(View v){
         switch(v.getId()){
-            case R.id.btn_Apply:
+            case R.id.btn_history:
+                Intent i_history = new Intent(getApplicationContext(), HistoryActivity.class);
+                startActivity(i_history);
                 break;
         }
     }
