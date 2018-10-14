@@ -33,12 +33,14 @@
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.notfound.android.fileprovider"
+            android:authorities="com.notfound.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
+            tools:replace="android:authorities">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/paths" />
+                tools:replace="android:resource"/>
         </provider>
 
         <activity android:name=".ProfileActivity" />

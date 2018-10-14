@@ -8,11 +8,12 @@
     android:background="@color/colorSnap">
 
     <ImageView
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/img_main_bg"
         android:scaleType="centerCrop"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:src="@drawable/img_main_bg"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- CLARIFAI BUTTON -->
     <ImageButton
@@ -66,7 +67,6 @@
         android:layout_height="60dp"
         android:padding="12dp"
         android:background="@drawable/btn_border_white"
-        android:src="@drawable/ic_snapchat_primary"
         android:contentDescription="snapchat button"
         android:layout_margin="5dp"
         android:scaleType="centerCrop"
@@ -111,5 +111,14 @@
         android:layout_margin="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <FrameLayout
+        android:id="@+id/bitmoji_button"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="6dp"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_snap"
+        app:layout_constraintStart_toEndOf="@+id/btn_picture" />
 
 </android.support.constraint.ConstraintLayout>

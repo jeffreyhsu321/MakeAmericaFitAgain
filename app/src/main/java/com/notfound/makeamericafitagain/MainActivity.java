@@ -14,6 +14,7 @@ import android.os.Debug;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +40,18 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.snapchat.kit.sdk.SnapCreative;
+import com.snapchat.kit.sdk.SnapLogin;
+import com.snapchat.kit.sdk.bitmoji.ui.BitmojiIconFragment;
+import com.snapchat.kit.sdk.core.controller.LoginStateController;
+import com.snapchat.kit.sdk.creative.api.SnapCreativeKitApi;
+import com.snapchat.kit.sdk.creative.exceptions.SnapMediaSizeException;
+import com.snapchat.kit.sdk.creative.media.SnapMediaFactory;
+import com.snapchat.kit.sdk.creative.media.SnapPhotoFile;
+import com.snapchat.kit.sdk.creative.models.SnapPhotoContent;
+import com.snapchat.kit.sdk.login.models.MeData;
+import com.snapchat.kit.sdk.login.models.UserDataResponse;
+import com.snapchat.kit.sdk.login.networking.FetchUserDataCallback;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -63,6 +76,8 @@ import clarifai2.dto.input.ClarifaiInput;
 import clarifai2.dto.model.Model;
 import clarifai2.dto.model.output.ClarifaiOutput;
 import clarifai2.dto.prediction.Concept;
+
+import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity implements
         View.OnClickListener{
@@ -138,6 +153,33 @@ public class MainActivity extends AppCompatActivity implements
         btn_picture.setOnClickListener(this);
         btn_snap.setOnClickListener(this);
 
+        final LoginStateController.OnLoginStateChangedListener mLoginStateChangedListener =
+                new LoginStateController.OnLoginStateChangedListener() {
+                    @Override
+                    public void onLoginSucceeded() {
+                        // Here you could update UI to show login success
+
+                        Toast.makeText(getApplicationContext(), "Logged in!", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onLoginFailed() {
+                        // Here you could update UI to show login failure
+
+                        Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onLogout() {
+                        // Here you could update UI to reflect logged out state
+                    }
+                };
+
+        // Add the LoginStateChangedListener you’ve defined to receive LoginInState updates
+        SnapLogin.getLoginStateController(this).addOnLoginStateChangedListener(mLoginStateChangedListener);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.bitmoji_button, new BitmojiIconFragment())
+                .commit();
 
         //JASON'S FOOD/CAL DATA
         try {
@@ -308,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 photoURI = FileProvider.getUriForFile(this,
-                        "com.notfound.android.fileprovider",
+                        "com.notfound.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
@@ -525,7 +567,56 @@ public class MainActivity extends AppCompatActivity implements
                 break;
 
             case R.id.btn_snap:
-                Toast.makeText(getApplicationContext(), "SNAPKIT Integration Coming Soon!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "SNAPKIT Integration Coming Soon!", Toast.LENGTH_SHORT).show();
+
+                if(SnapLogin.isUserLoggedIn(this)) {
+                    String query = "{me{bitmoji{avatar},displayName}}";
+
+                    if(photoURI == null) {
+                        SnapLogin.fetchUserData(this, query, null, new FetchUserDataCallback() {
+                            @Override
+                            public void onSuccess(@Nullable UserDataResponse userDataResponse) {
+                                if (userDataResponse == null || userDataResponse.getData() == null) {
+                                    return;
+                                }
+
+                                MeData meData = userDataResponse.getData().getMe();
+                                if (meData == null) {
+                                    return;
+                                }
+
+                                Toast.makeText(getApplicationContext(), "Signed in as " +
+                                                userDataResponse.getData().getMe().getDisplayName(),
+                                        Toast.LENGTH_SHORT).show();
+
+                            }
+
+                            @Override
+                            public void onFailure(boolean isNetworkError, int statusCode) {
+
+                            }
+                        });
+                    }
+                    else {
+                        //initiate sharing
+
+                        SnapCreativeKitApi snapCreativeKitApi = SnapCreative.getApi(this);
+                        SnapMediaFactory snapMediaFactory = SnapCreative.getMediaFactory(this);
+                        SnapPhotoFile photoFile;
+
+                        try {
+                            photoFile = snapMediaFactory.getSnapPhotoFromFile(new File(photoURI.getEncodedPath()));
+                        } catch (SnapMediaSizeException e) {
+                            Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_SHORT).show();;
+                            return;
+                        }
+                        SnapPhotoContent snapPhotoContent = new SnapPhotoContent(photoFile);
+                        snapCreativeKitApi.send(snapPhotoContent);
+                    }
+                }
+                else {
+                    snapLogIn();
+                }
                 break;
 
             default:
@@ -533,4 +624,9 @@ public class MainActivity extends AppCompatActivity implements
 
         }
     }
+
+    public void snapLogIn() {
+        SnapLogin.getAuthTokenManager(this).startTokenGrant();
+    }
+
 }
