@@ -3,6 +3,7 @@ package com.notfound.makeamericafitagain;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -23,15 +24,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
 
 import clarifai2.api.ClarifaiBuilder;
 import clarifai2.api.ClarifaiClient;
@@ -82,8 +93,48 @@ public class MainActivity extends AppCompatActivity implements
         btn_profile.setOnClickListener(this);
         btn_picture.setOnClickListener(this);
         btn_snap.setOnClickListener(this);
+
+        //parse();
     }
 
+    public void parse()
+    {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser mUser = mAuth.getCurrentUser();
+        DatabaseReference refRoot = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference refUser = refRoot.child(mUser.getUid());
+
+        try {
+            AssetManager assetManager = getAssets();
+
+            InputStream in = assetManager.open("Temp.csv");
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+            StringTokenizer st = null;
+            ArrayList<Food> foodList = new ArrayList<Food>();
+            while (br.ready()) {
+                try {
+                    st = new StringTokenizer(br.readLine(), ",");
+                    String name = st.nextToken().split("\\(")[0];
+                    double calories = Double.parseDouble(st.nextToken().split(" ")[0]);
+                    Log.d("filesbla", name + " " + calories);
+                    Food f = new Food(name, calories);
+                    foodList.add(f);
+                } catch (NoSuchElementException e) {
+                    //  continue;
+                } catch (NumberFormatException e) {
+                    // continue;
+                }
+            }
+            refRoot.child("masterlist").setValue(foodList);
+            Log.d("filesbla", "Successful");
+        }
+        catch(IOException e)
+        {
+            Log.d("testing", e.toString());
+        }
+
+    }
 
     /**
      * retrieve result (List<Concepts> from BackgroundNetworking)
