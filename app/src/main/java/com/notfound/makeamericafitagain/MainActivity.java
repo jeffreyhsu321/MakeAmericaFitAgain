@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Debug;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -42,7 +43,19 @@ import clarifai2.dto.model.Model;
 import clarifai2.dto.model.output.ClarifaiOutput;
 import clarifai2.dto.prediction.Concept;
 
+import com.snapchat.kit.sdk.SnapCreative;
 import com.snapchat.kit.sdk.SnapLogin;
+import com.snapchat.kit.sdk.creative.api.SnapCreativeKitApi;
+import com.snapchat.kit.sdk.creative.exceptions.SnapMediaSizeException;
+import com.snapchat.kit.sdk.creative.media.SnapMediaFactory;
+import com.snapchat.kit.sdk.creative.media.SnapPhotoFile;
+import com.snapchat.kit.sdk.creative.models.SnapLiveCameraContent;
+import com.snapchat.kit.sdk.creative.models.SnapPhotoContent;
+import com.snapchat.kit.sdk.login.models.MeData;
+import com.snapchat.kit.sdk.login.models.UserDataResponse;
+import com.snapchat.kit.sdk.login.networking.FetchUserDataCallback;
+
+import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity implements
         View.OnClickListener{
@@ -68,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //Snapchat
     boolean isUserLoggedIn;
+    Uri photoURI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
+                photoURI = FileProvider.getUriForFile(this,
                         "com.notfound.android.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
@@ -303,10 +317,61 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.btn_snap:
                 if(isUserLoggedIn) {
                     Toast.makeText(getApplicationContext(), "Already logged in", Toast.LENGTH_SHORT).show();
+                    SnapMediaFactory snapMediaFactory = SnapCreative.getMediaFactory(mContext);
+                    SnapCreativeKitApi snapCreativeKitApi = SnapCreative.getApi(mContext);
+                    SnapPhotoFile photoFile;
+
+                    try {
+                        File photo =  new File(photoURI.getPath());
+                        Log.d("PETER", photoURI.get());
+                        photoFile = snapMediaFactory.getSnapPhotoFromFile(photo);
+                    } catch (SnapMediaSizeException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    SnapPhotoContent snapPhotoContent = new SnapPhotoContent(photoFile);
+                    //SnapLiveCameraContent snapLiveCameraContent = new SnapLiveCameraContent();
+                    snapCreativeKitApi.send(snapPhotoContent);
                 }
                 else {
                     SnapLogin.getAuthTokenManager(mContext).startTokenGrant();
                     isUserLoggedIn = SnapLogin.isUserLoggedIn(mContext);
+
+                    if(isUserLoggedIn) {
+                        String query = "{me{bitmoji{avatar},displayName}}";
+
+                        SnapLogin.fetchUserData(mContext, query, null, new FetchUserDataCallback() {
+                            @Override
+                            public void onSuccess(@Nullable UserDataResponse userDataResponse) {
+                                if (userDataResponse == null || userDataResponse.getData() == null) {
+                                    return;
+                                }
+
+                                MeData meData = userDataResponse.getData().getMe();
+                                if (meData == null) {
+                                    return;
+                                }
+
+                                Toast.makeText(mContext, "Logged in as " +
+                                        (userDataResponse.getData().getMe().getDisplayName()),
+                                        Toast.LENGTH_SHORT).show();
+                                /*
+                                if (meData.getBitmojiData() != null) {
+                                    Glide.with(getContext())
+                                            .load(meData.getBitmojiData().getAvatar())
+                                            .into(mBitmojiImageView);
+                                }*/
+                            }
+
+                            @Override
+                            public void onFailure(boolean isNetworkError, int statusCode) {
+
+                            }
+                        });
+                    }
+                    else {
+                        Toast.makeText(mContext, "Logged in failed", Toast.LENGTH_SHORT);
+                    }
                 }
 
             default:
