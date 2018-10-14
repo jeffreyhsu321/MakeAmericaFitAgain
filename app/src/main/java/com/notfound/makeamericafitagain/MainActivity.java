@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,9 +45,10 @@ public class MainActivity extends AppCompatActivity implements
         View.OnClickListener{
 
     //declarations
-    Button btn_determine;
-    Button btn_picture;
-    TextView tv_test;
+    ImageButton btn_determine;
+    ImageButton btn_picture;
+    ImageButton btn_profile;
+    ImageButton btn_snap;
     ImageView iv_test;
 
     Bitmap imageBitmap;
@@ -69,13 +71,17 @@ public class MainActivity extends AppCompatActivity implements
         //init
         btn_determine = findViewById(R.id.btn_determine);
         btn_picture = findViewById(R.id.btn_picture);
+        btn_profile = findViewById(R.id.btn_profile);
+        btn_snap = findViewById(R.id.btn_snap);
         iv_test = findViewById(R.id.iv_test);
         mContext = this.getApplicationContext();
         dialog = new ProgressDialog(this);
 
         //attach listener
         btn_determine.setOnClickListener(this);
+        btn_profile.setOnClickListener(this);
         btn_picture.setOnClickListener(this);
+        btn_snap.setOnClickListener(this);
     }
 
 
@@ -144,9 +150,9 @@ public class MainActivity extends AppCompatActivity implements
                 final ClarifaiClient client = new ClarifaiBuilder(apiKey).buildSync();
                 new ClarifaiBuilder(apiKey).buildSync();
 
-                Model<Concept> generalModel = client.getDefaultModels().generalModel();
+                Model<Concept> foodModel = client.getDefaultModels().foodModel();
 
-                PredictRequest<Concept> request = generalModel.predict().withInputs(
+                PredictRequest<Concept> request = foodModel.predict().withInputs(
                         ClarifaiInput.forImage(outputFile)
                 );
                 List<ClarifaiOutput<Concept>> result = request.executeSync().get();
@@ -160,8 +166,8 @@ public class MainActivity extends AppCompatActivity implements
             final String apiKey = "435aa8b16a7e4f8a9e90d3f44455dfd7";
             final ClarifaiClient client = new ClarifaiBuilder("435aa8b16a7e4f8a9e90d3f44455dfd7").buildSync();
             new ClarifaiBuilder(apiKey).buildSync();
-            Model<Concept> generalModel = client.getDefaultModels().generalModel();
-            PredictRequest<Concept> request = generalModel.predict().withInputs(
+            Model<Concept> foodModel = client.getDefaultModels().foodModel();
+            PredictRequest<Concept> request = foodModel.predict().withInputs(
                     ClarifaiInput.forImage("")
             );
             List<ClarifaiOutput<Concept>> result = request.executeSync().get();
@@ -261,6 +267,12 @@ public class MainActivity extends AppCompatActivity implements
         iv_test.setImageBitmap(rotatedBitmap);
         imageBitmap = rotatedBitmap;
         dialog.dismiss();
+
+        btn_determine.setVisibility(View.VISIBLE);
+        btn_determine.bringToFront();
+        btn_picture.setVisibility(View.INVISIBLE);
+        btn_profile.bringToFront();
+        btn_snap.bringToFront();
     }
 
 
@@ -277,6 +289,8 @@ public class MainActivity extends AppCompatActivity implements
                 dispatchTakePictureIntent();
                 break;
             case R.id.btn_profile:
+                Intent i_profile = new Intent(getApplicationContext(), ProfileActivity.class);
+                startActivity(i_profile);
                 break;
             default:
                 break;
