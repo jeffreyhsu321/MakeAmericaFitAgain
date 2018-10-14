@@ -8,59 +8,98 @@
     android:background="@color/colorPrimary">
 
     <!-- CLARIFAI BUTTON -->
-    <Button
+    <ImageButton
         android:id="@+id/btn_determine"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Determine Calorie"
-        android:background="@drawable/btn_border_white"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:padding="12dp"
+        android:background="@drawable/btn_square_accent"
+        android:src="@drawable/ic_clarifai_primary"
+        android:contentDescription="clarifai's button"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_margin="10dp"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:visibility="invisible"/>
 
     <!-- TAKE PHOTO BUTTON -->
-    <Button
+    <ImageButton
         android:id="@+id/btn_picture"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Take a Photo"
-        android:background="@drawable/btn_border_white"
-        app:layout_constraintBottom_toTopOf="@id/btn_determine"
-        android:layout_margin="10dp"/>
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:padding="12dp"
+        android:background="@drawable/btn_square_accent"
+        android:src="@drawable/ic_camera"
+        android:contentDescription="take photo"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:visibility="visible"/>
+
+    <!-- PROFILE BUTTON -->
+    <ImageButton
+        android:id="@+id/btn_profile"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:padding="12dp"
+        android:background="@drawable/btn_square_white"
+        android:src="@drawable/ic_profile"
+        android:contentDescription="profile"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/btn_picture"/>
+
+    <!-- SNAP BUTTON -->
+    <ImageButton
+        android:id="@+id/btn_snap"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:padding="12dp"
+        android:background="@drawable/btn_square_white"
+        android:src="@drawable/ic_snapchat_primary"
+        android:contentDescription="snapchat button"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/btn_picture"/>
+
 
     <!-- FOOD IMAGE -->
     <ImageView
         android:id="@+id/iv_test"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_margin="10dp"
-        android:background="@drawable/food_circle"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toTopOf="@id/btn_picture" />
-
-    <!-- white border -->
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/food_border"
-        android:layout_margin="5dp"
-        app:layout_constraintBottom_toTopOf="@id/btn_picture"
-        android:padding="10dp"/>
-
-    <!-- another border lol -->
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/food_border2"
-        android:layout_margin="5dp"
-        app:layout_constraintBottom_toTopOf="@id/btn_picture"
-        android:padding="10dp"/>
-
-    <Button
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/btn_profile"/>
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- CAMERA LENS -->
+    <ImageView
+        android:layout_height="30dp"
+        android:layout_width="30dp"
+        android:src="@drawable/cam_lens_lt"
+        android:layout_margin="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <ImageView
+        android:layout_height="30dp"
+        android:layout_width="30dp"
+        android:src="@drawable/cam_lens_rt"
+        android:layout_margin="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <ImageView
+        android:layout_height="30dp"
+        android:layout_width="30dp"
+        android:src="@drawable/cam_lens_lb"
+        android:layout_margin="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+    <ImageView
+        android:layout_height="30dp"
+        android:layout_width="30dp"
+        android:src="@drawable/cam_lens_rb"
+        android:layout_margin="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

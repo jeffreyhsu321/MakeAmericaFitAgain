@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,6 +28,7 @@ public class ProfileActivity extends AppCompatActivity implements
 
     //declaration
     TextInputEditText et_Name;
+    TextView tv_calorie;
     Button btn_Apply;
 
     FirebaseAuth mAuth;
@@ -41,6 +43,8 @@ public class ProfileActivity extends AppCompatActivity implements
     CircleBar cb_calorie;
 
     int progressStep = 0;
+    int calorieMeter = 0;
+    int calorieMeterStep;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,7 @@ public class ProfileActivity extends AppCompatActivity implements
 
         //init
         et_Name = findViewById(R.id.et_Name);
+        tv_calorie = findViewById(R.id.tv_calorie);
         btn_Apply = findViewById(R.id.btn_Apply);
 
         mAuth = FirebaseAuth.getInstance();
@@ -69,14 +74,24 @@ public class ProfileActivity extends AppCompatActivity implements
         refUser.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                final int progress = (dataSnapshot.hasChild("calorie_today")) ? Integer.parseInt(dataSnapshot.child("calorie_today").getValue(String.class)) : 0;
+                int calorie_today = (dataSnapshot.hasChild("calorie_today")) ? Integer.parseInt(dataSnapshot.child("calorie_today").getValue(String.class)) : 0;
+                int calorie_goal = (dataSnapshot.hasChild("calorie_goal")) ? Integer.parseInt(dataSnapshot.child("calorie_goal").getValue(String.class)) : 1;
+                final int progress = calorie_today/calorie_goal;
                 progressStep = 0;
+                calorieMeter = 0;
+                calorieMeterStep = calorie_today / progress;
+
+                //animated progress
                 final Handler mUpdater = new Handler();
                 Runnable mUpdateView = new Runnable() {
                     @Override
                     public void run() {
+
+                        tv_calorie.setText(Integer.toString(calorieMeter));
                         cb_calorie.setProgress(progressStep);
+
                         if(progressStep < progress){
+                            calorieMeter += calorieMeterStep;
                             progressStep++;
                         } else {
                             mUpdater.removeCallbacksAndMessages(null);
@@ -142,7 +157,6 @@ public class ProfileActivity extends AppCompatActivity implements
     public void onClick(View v){
         switch(v.getId()){
             case R.id.btn_Apply:
-
                 break;
         }
     }
