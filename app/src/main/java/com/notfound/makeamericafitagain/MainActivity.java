@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements
     ImageButton btn_picture;
     ImageButton btn_profile;
     ImageButton btn_snap;
+    FrameLayout bit_emoji;
     ImageView iv_test;
 
     static Bitmap imageBitmap;
@@ -132,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements
         btn_picture = findViewById(R.id.btn_picture);
         btn_profile = findViewById(R.id.btn_profile);
         btn_snap = findViewById(R.id.btn_snap);
+        bit_emoji = findViewById(R.id.bitmoji_button);
         iv_test = findViewById(R.id.iv_test);
         mContext = this.getApplicationContext();
         dialog = new ProgressDialog(this);
@@ -432,6 +435,8 @@ public class MainActivity extends AppCompatActivity implements
         btn_determine.bringToFront();
         btn_profile.bringToFront();
         btn_snap.bringToFront();
+        bit_emoji.bringToFront();
+
         btn_picture.bringToFront();
     }
 
