@@ -35,7 +35,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@android:color/transparent"
 
-        android:src="@drawable/ic_icon"
+        android:src="@drawable/ic_icon_accent"
         android:scaleType="fitCenter"/>
 
 
@@ -101,7 +101,7 @@
         android:text="Login"
         android:textSize="18sp"
         android:background="@drawable/btn_border_white"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorAccent"
 
         app:layout_constraintTop_toBottomOf="@id/tnl_Password"
         app:layout_constraintBottom_toBottomOf="parent"/>

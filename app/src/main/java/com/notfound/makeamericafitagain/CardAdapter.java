@@ -3,6 +3,7 @@ package com.notfound.makeamericafitagain;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.CardView;
@@ -158,6 +159,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
         tv_calories5 = holder.mCardView.findViewById(R.id.tv_calories5);
         tv_calories5.setText(mDataset.get(position).getFood(4).getCalories());
 
+        holder.mCardView.setCardElevation((isColor)?1:20);
+
         String image_name = mDataset.get(position).getImage_name();
         switch(position){
             case 0:
@@ -190,23 +193,45 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     //SET IMAGEVIEW
                     Bitmap imageBitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+                    // Get the dimensions of the View
+                    int targetW = iv_food1.getWidth();
+                    int targetH = iv_food1.getHeight();
+
+                    // Get the dimensions of the bitmap
+                    BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                    bmOptions.inJustDecodeBounds = true;
+                    int photoW = bmOptions.outWidth;
+                    int photoH = bmOptions.outHeight;
+
+                    // Determine how much to scale down the image
+                    int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+                    // Decode the image file into a Bitmap sized to fill the View
+                    bmOptions.inJustDecodeBounds = false;
+                    bmOptions.inSampleSize = scaleFactor;
+
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(90);
+
+                    Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), bmOptions);
+                    Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap , 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 
                     counter++;
                     switch(counter){
                         case 1:
-                            iv_food1.setImageBitmap(imageBitmap);
+                            iv_food1.setImageBitmap(rotatedBitmap);
                             break;
                         case 2:
-                            iv_food2.setImageBitmap(imageBitmap);
+                            iv_food2.setImageBitmap(rotatedBitmap);
                             break;
                         case 3:
-                            iv_food3.setImageBitmap(imageBitmap);
+                            iv_food3.setImageBitmap(rotatedBitmap);
                             break;
                         case 4:
-                            iv_food4.setImageBitmap(imageBitmap);
+                            iv_food4.setImageBitmap(rotatedBitmap);
                             break;
                         case 5:
-                            iv_food5.setImageBitmap(imageBitmap);
+                            iv_food5.setImageBitmap(rotatedBitmap);
                             break;
                         default:
                             break;
@@ -234,30 +259,30 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
     public void adjsFill(){
         adjs = new ArrayList<>();
         adjs.add("Flaming");
-        adjs.add("Bland");
-        adjs.add("Amazing");
         adjs.add("Jaw-busting");
         adjs.add("Hot");
-        adjs.add("Mild");
         adjs.add("Explosive");
         adjs.add("Home-made");
         adjs.add("Impossible");
         adjs.add("Hacking");
-        adjs.add("Flaming");
-        adjs.add("Bland");
-        adjs.add("Amazing");
-        adjs.add("Jaw-busting");
-        adjs.add("Hot");
-        adjs.add("Mild");
-        adjs.add("Explosive");
-        adjs.add("Home-made");
-        adjs.add("Impossible");
-        adjs.add("Hacking");
+        adjs.add("Bitter");
+        adjs.add("Bite-size");
+        adjs.add("Chocolate");
+        adjs.add("Classy");
+        adjs.add("Crisp");
+        adjs.add("Drizzled");
+        adjs.add("Free");
+        adjs.add("Glazed");
+        adjs.add("Savoury");
     }
 
     public String randomAdjs(){
+        adjsFill();
         Random random = new Random();
-        int randomNum = random.nextInt((adjs.size() - 1) + 1) + 1;
+        int randomNum = random.nextInt((adjs.size() - 1) + 1) - 1;
+        while(randomNum >= adjs.size() || randomNum < 0){
+            randomNum = random.nextInt((adjs.size() - 1) + 1) - 1;
+        }
 
         return adjs.get(randomNum);
     }

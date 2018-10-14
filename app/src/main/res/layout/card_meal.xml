@@ -8,7 +8,8 @@
     android:layout_width="match_parent"
     android:layout_height="200dp"
     card_view:cardCornerRadius="4dp"
-    card_view:cardElevation="10dp">
+    card_view:cardElevation="10dp"
+    android:layout_margin="10dp">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/layout_COLORME"

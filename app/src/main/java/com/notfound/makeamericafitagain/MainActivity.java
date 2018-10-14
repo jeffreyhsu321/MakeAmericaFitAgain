@@ -14,6 +14,7 @@ import android.os.Debug;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -507,7 +508,7 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.btn_determine:
 
                 //start dialog
-                dialog.setMessage("Feeding...");
+                dialog.setMessage("Feeding Clarifai...");
                 dialog.show();
 
                 //send image to Clarifai
@@ -522,6 +523,11 @@ public class MainActivity extends AppCompatActivity implements
                 Intent i_profile = new Intent(getApplicationContext(), ProfileActivity.class);
                 startActivity(i_profile);
                 break;
+
+            case R.id.btn_snap:
+                Toast.makeText(getApplicationContext(), "SNAPKIT Integration Coming Soon!", Toast.LENGTH_SHORT).show();
+                break;
+
             default:
                 break;
 

@@ -86,28 +86,28 @@
     <ImageView
         android:layout_height="30dp"
         android:layout_width="30dp"
-        android:src="@drawable/cam_lens_lt"
+        android:src="@drawable/camlens_lt"
         android:layout_margin="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
     <ImageView
         android:layout_height="30dp"
         android:layout_width="30dp"
-        android:src="@drawable/cam_lens_rt"
+        android:src="@drawable/camlens_rt"
         android:layout_margin="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
     <ImageView
         android:layout_height="30dp"
         android:layout_width="30dp"
-        android:src="@drawable/cam_lens_lb"
+        android:src="@drawable/camlens_lb"
         android:layout_margin="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
     <ImageView
         android:layout_height="30dp"
         android:layout_width="30dp"
-        android:src="@drawable/cam_lens_rb"
+        android:src="@drawable/camlens_rb"
         android:layout_margin="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
