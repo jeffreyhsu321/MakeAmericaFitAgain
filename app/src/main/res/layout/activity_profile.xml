@@ -44,7 +44,7 @@
                 android:id="@+id/tv_calorie"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:text="2018"
+                android:text="0"
                 android:textColor="#FFFFFF"
                 android:textAlignment="center"
                 android:textSize="50sp"
