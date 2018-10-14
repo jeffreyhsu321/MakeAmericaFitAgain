@@ -44,9 +44,10 @@ public class ResultAdapter extends
 
         // Set item views based on your views and data model
         TextView tv_name = viewHolder.tv_name;
-        Button btn_delete = viewHolder.btn_thing;
+        TextView tv_calories = viewHolder.tv_calories;
 
         tv_name.setText(food.getName());
+        tv_calories.setText(food.getCalories());
     }
     
     // Returns the total count of items in the list
@@ -61,7 +62,7 @@ public class ResultAdapter extends
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
         public TextView tv_name;
-        public Button btn_thing;
+        public TextView tv_calories;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -71,6 +72,7 @@ public class ResultAdapter extends
             super(itemView);
 
             tv_name = itemView.findViewById(R.id.tv_name);
+            tv_calories = itemView.findViewById(R.id.tv_calories);
         }
     }
 }

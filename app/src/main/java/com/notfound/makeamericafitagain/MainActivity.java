@@ -13,7 +13,8 @@ import android.os.AsyncTask;
 import android.os.Debug;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,19 +26,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.snapchat.kit.sdk.SnapCreative;
-import com.snapchat.kit.sdk.SnapLogin;
-import com.snapchat.kit.sdk.creative.api.SnapCreativeKitApi;
-import com.snapchat.kit.sdk.creative.media.SnapMediaFactory;
-import com.snapchat.kit.sdk.creative.media.SnapPhotoFile;
-import com.snapchat.kit.sdk.creative.models.SnapLiveCameraContent;
-import com.snapchat.kit.sdk.login.models.MeData;
-import com.snapchat.kit.sdk.login.models.UserDataResponse;
-import com.snapchat.kit.sdk.login.networking.FetchUserDataCallback;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -52,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 import clarifai2.api.ClarifaiBuilder;
@@ -71,8 +73,8 @@ public class MainActivity extends AppCompatActivity implements
     ImageButton btn_profile;
     ImageButton btn_snap;
     ImageView iv_test;
-    boolean isUserLoggedIn;
-    Bitmap imageBitmap;
+
+    static Bitmap imageBitmap;
 
     private Context mContext;
 
@@ -83,6 +85,27 @@ public class MainActivity extends AppCompatActivity implements
     String mCurrentPhotoPath;
 
     ProgressDialog dialog;
+
+    static List<Food> list_food_cal;
+    int calsToBeConsumed = 0;
+
+    //saving photo to Firebase
+    Uri photoURI;
+    FirebaseAuth mAuth;
+    FirebaseUser mUser;
+    FirebaseStorage storage;
+    StorageReference storageRef;
+    DatabaseReference refRoot;
+    DatabaseReference refUser;
+
+    StorageReference foodRef;
+    StorageReference foodImageRef;
+    UploadTask uploadTask;
+
+    boolean doneUpdateCal = false;
+
+
+    boolean hasMadeMeal = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,23 +121,25 @@ public class MainActivity extends AppCompatActivity implements
         mContext = this.getApplicationContext();
         dialog = new ProgressDialog(this);
 
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+        refRoot = FirebaseDatabase.getInstance().getReference();
+        refUser = refRoot.child(mUser.getUid());
+
+        foodRef = storageRef.child("food.jpg");
+        foodImageRef = storageRef.child("images/food.jpg");
+
+
         //attach listener
         btn_determine.setOnClickListener(this);
         btn_profile.setOnClickListener(this);
         btn_picture.setOnClickListener(this);
         btn_snap.setOnClickListener(this);
 
-        //parse();
-        isUserLoggedIn = SnapLogin.isUserLoggedIn(mContext);
-    }
 
-    public void parse()
-    {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser mUser = mAuth.getCurrentUser();
-        DatabaseReference refRoot = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference refUser = refRoot.child(mUser.getUid());
-
+        //JASON'S FOOD/CAL DATA
         try {
             AssetManager assetManager = getAssets();
 
@@ -127,14 +152,14 @@ public class MainActivity extends AppCompatActivity implements
                 try {
                     st = new StringTokenizer(br.readLine(), ",");
                     String name = st.nextToken().split("\\(")[0];
-                    double calories = Double.parseDouble(st.nextToken().split(" ")[0]);
+                    String calories = st.nextToken().split(" ")[0];
                     Log.d("filesbla", name + " " + calories);
                     Food f = new Food(name, calories);
                     foodList.add(f);
                 } catch (NoSuchElementException e) {
-                      continue;
+                    continue;
                 } catch (NumberFormatException e) {
-                     continue;
+                    continue;
                 }
             }
             refRoot.child("masterlist").setValue(foodList);
@@ -145,7 +170,26 @@ public class MainActivity extends AppCompatActivity implements
             Log.d("testing", e.toString());
         }
 
+        //grab food list cal
+        refRoot.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                list_food_cal = new ArrayList<>();
+                for(int i = 0; i < dataSnapshot.child("masterlist").getChildrenCount(); i++){
+                    String name = dataSnapshot.child("masterlist").child(String.valueOf(i)).child("name").getValue(String.class);
+                    String calories = dataSnapshot.child("masterlist").child(String.valueOf(i)).child("calories").getValue(String.class);
+                    Food food = new Food(name, calories);
+                    list_food_cal.add(food);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+
+        });
     }
+
 
     /**
      * retrieve result (List<Concepts> from BackgroundNetworking)
@@ -155,7 +199,12 @@ public class MainActivity extends AppCompatActivity implements
 
         createFoodList(result);
         dialog.dismiss();
+
+        //upload
+        uploadImage(iv_test);
+
         //intent to result activity
+        dialog.dismiss();
         Intent i_result = new Intent(this, ResultActivity.class);
         startActivity(i_result);
 
@@ -172,9 +221,9 @@ public class MainActivity extends AppCompatActivity implements
 
         //conversion and filling
         int list_size = result.get(0).data().size();
-        for(int i = 0; i < list_size; i++){
+        for(int i = 0; i < 5; i++){
             //instantiate food object and append
-            list_foods.add(new Food(result.get(0).data().get(i).name()));
+            list_foods.add(new Food(result.get(0).data().get(i).name(), "100"));
         }
 
     }
@@ -219,6 +268,7 @@ public class MainActivity extends AppCompatActivity implements
                 );
                 List<ClarifaiOutput<Concept>> result = request.executeSync().get();
 
+                dialog.dismiss();
                 return result;
 
 
@@ -243,6 +293,8 @@ public class MainActivity extends AppCompatActivity implements
      * camera activity
      */
     private void dispatchTakePictureIntent() {
+        doneUpdateCal = false;
+
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -255,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
+                photoURI = FileProvider.getUriForFile(this,
                         "com.notfound.android.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
@@ -301,6 +353,10 @@ public class MainActivity extends AppCompatActivity implements
         return image;
     }
 
+    public void onPause(){
+        super.onPause();
+        dialog.dismiss();
+    }
 
     private void setPic() {
         // Get the dimensions of the View
@@ -332,9 +388,117 @@ public class MainActivity extends AppCompatActivity implements
 
         btn_determine.setVisibility(View.VISIBLE);
         btn_determine.bringToFront();
-        btn_picture.setVisibility(View.INVISIBLE);
         btn_profile.bringToFront();
         btn_snap.bringToFront();
+        btn_picture.bringToFront();
+    }
+
+
+    /**
+     * upload image to firebase
+     * @param view
+     */
+    public void uploadImage(View view) {
+
+        //upload image
+        StorageReference riversRef = storageRef.child("images/"+photoURI.getLastPathSegment());
+        uploadTask = riversRef.putFile(photoURI);
+
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Toast.makeText(getApplicationContext(), "Upload failed. Please contact support", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                // ...
+                Toast.makeText(getApplicationContext(), "Upload successful!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
+            //COMPARE CAL VALUES
+            //retrieve cal values
+            Random rand = new Random();
+            for(int i = 0; i < list_foods.size(); i++){
+                Food food = list_foods.get(i);
+                //iterate through masterlist
+                for(Food food_other : list_food_cal){
+                    if(food.equals(food_other, true) && !food_other.getCalories().equals("")){
+                        food.setCalories(food_other.getCalories());
+                        list_foods.set(i, food);
+                        calsToBeConsumed += Integer.parseInt(food.getCalories());
+                    } else {
+                    }
+                }
+            }
+            for(int i = 0; i < list_foods.size(); i++){
+                Food food = list_foods.get(i);
+                //iterate through to fill in random values
+                if(food.getCalories().equals("100")){
+                    int n = rand.nextInt(50) + 1;
+                    food.setCalories(String.valueOf(n));
+                    list_foods.set(i, food);
+                    calsToBeConsumed += n;
+                }
+            }
+
+            //update cal values for user
+            refUser.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(!doneUpdateCal){
+                        int cal = Integer.parseInt(dataSnapshot.child("calorie_today").getValue(String.class));
+                        cal += calsToBeConsumed;
+                        refUser.child("calorie_today").setValue(String.valueOf(cal));
+                    }
+
+                    doneUpdateCal = true;
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+
+            });
+
+
+
+        hasMadeMeal = false;
+
+        //update database markers
+        refUser.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(hasMadeMeal){
+                    return;
+                }
+
+                //create new meal object
+                Meal meal = new Meal(list_foods, Integer.toString((int)dataSnapshot.child("meals").getChildrenCount()+1), photoURI.getLastPathSegment());
+                String index = meal.getIndex();
+                String image_name = meal.getImage_name();
+
+                //fill out meal object in firebase
+                DatabaseReference refMeal = refUser.child("meals").child(index);
+                refMeal.setValue(list_foods);
+                refUser.child("meals").child(index).child("image_name").setValue(image_name.replace(".jpg",""));
+
+                hasMadeMeal = true;
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), "Error occurred. Please contact support", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        });
     }
 
 
@@ -342,82 +506,26 @@ public class MainActivity extends AppCompatActivity implements
         switch(v.getId()){
 
             case R.id.btn_determine:
+
                 //start dialog
-                dialog.setMessage("Feeding...");
+                dialog.setMessage("Feeding Clarifai...");
                 dialog.show();
+
+                //send image to Clarifai
                 new BackgroundNetworking().execute();
+
                 break;
             case R.id.btn_picture:
                 dispatchTakePictureIntent();
                 break;
             case R.id.btn_profile:
+                dialog.dismiss();
                 Intent i_profile = new Intent(getApplicationContext(), ProfileActivity.class);
                 startActivity(i_profile);
                 break;
+
             case R.id.btn_snap:
-                if(isUserLoggedIn) {
-                    //already logged in
-
-                    Toast.makeText(mContext, "Already logged in", Toast.LENGTH_LONG).show();
-                    SnapMediaFactory snapMediaFactory = SnapCreative.getMediaFactory(mContext);
-                    SnapCreativeKitApi snapCreativeKitApi = SnapCreative.getApi(mContext);
-                    SnapPhotoFile photoFile;
-
-                    /*try {
-                        File photo =  new File(photoURI.getPath());
-                        Log.d("PETER", photoURI.getPath());
-                        photoFile = snapMediaFactory.getSnapPhotoFromFile(photo);
-                    } catch (SnapMediaSizeException e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                    SnapPhotoContent snapPhotoContent = new SnapPhotoContent(photoFile);*/
-                    SnapLiveCameraContent snapLiveCameraContent = new SnapLiveCameraContent();
-                    snapCreativeKitApi.send(snapLiveCameraContent);
-                }
-                else {
-                    //yet to log in
-
-                    SnapLogin.getAuthTokenManager(mContext).startTokenGrant();
-                    isUserLoggedIn = SnapLogin.isUserLoggedIn(mContext);
-
-                    if(isUserLoggedIn) {
-                        String query = "{me{bitmoji{avatar},displayName}}";
-
-                        SnapLogin.fetchUserData(mContext, query, null, new FetchUserDataCallback() {
-                            @Override
-                            public void onSuccess(@Nullable UserDataResponse userDataResponse) {
-                                if (userDataResponse == null || userDataResponse.getData() == null) {
-                                    return;
-                                }
-
-                                MeData meData = userDataResponse.getData().getMe();
-                                if (meData == null) {
-                                    return;
-                                }
-
-                                Toast.makeText(mContext, "Logged in as " +
-                                                (userDataResponse.getData().getMe().getDisplayName()),
-                                        Toast.LENGTH_LONG).show();
-
-                                /*
-                                if (meData.getBitmojiData() != null) {
-                                    getSupportFragmentManager().beginTransaction()
-                                            .replace(R.id.btn_profile, new BitmojiIconFragment())
-                                            .commit();
-                                }*/
-                            }
-
-                            @Override
-                            public void onFailure(boolean isNetworkError, int statusCode) {
-
-                            }
-                        });
-                    }
-                    else {
-                        Toast.makeText(mContext, "Logged in failed", Toast.LENGTH_LONG);
-                    }
-                }
+                Toast.makeText(getApplicationContext(), "SNAPKIT Integration Coming Soon!", Toast.LENGTH_SHORT).show();
                 break;
 
             default:

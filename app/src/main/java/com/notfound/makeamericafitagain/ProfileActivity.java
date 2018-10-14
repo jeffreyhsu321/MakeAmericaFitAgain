@@ -1,6 +1,7 @@
 package com.notfound.makeamericafitagain;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
@@ -10,6 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,9 +29,11 @@ public class ProfileActivity extends AppCompatActivity implements
         View.OnClickListener{
 
     //declaration
-    TextInputEditText et_Name;
+    TextInputEditText et_goal;
+    TextView tv_goal;
     TextView tv_calorie;
-    Button btn_Apply;
+    Button btn_history;
+    ImageButton btn_apply;
 
     FirebaseAuth mAuth;
     FirebaseUser mUser;
@@ -48,15 +52,21 @@ public class ProfileActivity extends AppCompatActivity implements
 
     int speed;
 
+    int timeTaken = 0;
+
+    int progress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
         //init
-        et_Name = findViewById(R.id.et_Name);
+        et_goal = findViewById(R.id.et_goal);
+        tv_goal = findViewById(R.id.tv_goal);
         tv_calorie = findViewById(R.id.tv_calorie);
-        btn_Apply = findViewById(R.id.btn_Apply);
+        btn_history = findViewById(R.id.btn_history);
+        btn_apply = findViewById(R.id.btn_apply);
 
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
@@ -69,19 +79,25 @@ public class ProfileActivity extends AppCompatActivity implements
         cb_calorie.setProgress(0);
 
         //attach listeners
-        btn_Apply.setOnClickListener(this);
-
+        btn_history.setOnClickListener(this);
+        btn_apply.setOnClickListener(this);
 
         //set progress bar
         refUser.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                //set goal text
+                tv_goal.setText(" / " + dataSnapshot.child("calorie_goal").getValue(String.class));
+
+                //set meter stuff
+
                 int calorie_today = (dataSnapshot.hasChild("calorie_today")) ? Integer.parseInt(dataSnapshot.child("calorie_today").getValue(String.class)) : 0;
                 int calorie_goal = (dataSnapshot.hasChild("calorie_goal")) ? Integer.parseInt(dataSnapshot.child("calorie_goal").getValue(String.class)) : 1;
-                final int progress = calorie_today/calorie_goal;
+                progress = (int)((float)calorie_today / (float)calorie_goal*100);
                 progressStep = 0;
                 calorieMeter = 0;
-                calorieMeterStep = calorie_today / progress;
+                calorieMeterStep = (progress != 0) ? (calorie_today / progress) : 0;
 
                 speed = 10;
 
@@ -95,8 +111,9 @@ public class ProfileActivity extends AppCompatActivity implements
                         cb_calorie.setProgress(progressStep);
 
                         if(progressStep < progress){
-                            calorieMeter += calorieMeterStep;
-                            progressStep++;
+                            timeTaken++;
+                            calorieMeter += (timeTaken < 1000) ? calorieMeterStep : 10;
+                            progressStep += (timeTaken < 1000) ? 1 : 10;
                         } else {
                             mUpdater.removeCallbacksAndMessages(null);
                         }
@@ -117,34 +134,28 @@ public class ProfileActivity extends AppCompatActivity implements
 
     public void updateProfile() {
         //init
-        final String name = et_Name.getText().toString();
+        final String goal = et_goal.getText().toString();
 
         //field validation
-        if (TextUtils.isEmpty(name)) {
-            Toast.makeText(getApplicationContext(), "Please enter your name!", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(goal)) {
+            Toast.makeText(getApplicationContext(), "Please enter your goal!", Toast.LENGTH_SHORT).show();
             return;
         } else {
 
             //lol another validation just to be safe
-            if(name.equals("")){
+            if(goal.equals("")){
                 Toast.makeText(getApplicationContext(), "Please make sure all fields are entered!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             //update profile info
-            dialog.setMessage("Updating profile...");
+            dialog.setMessage("Updating goal...");
             dialog.show();
             //init user object
             refUser.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    userObj = new User(dataSnapshot.child("email").getValue(String.class), dataSnapshot.child("password").getValue(String.class));
-
-                    //update user object
-                    userObj.updateUserInfo(name);
-
-                    //write user object to database
-                    refUser.setValue(userObj);
+                    refUser.child("calorie_goal").setValue(goal);
                 }
 
                 @Override
@@ -154,13 +165,23 @@ public class ProfileActivity extends AppCompatActivity implements
                 }
             });
 
+
+            dialog.dismiss();
+
         }
     }
 
 
     public void onClick(View v){
         switch(v.getId()){
-            case R.id.btn_Apply:
+            case R.id.btn_history:
+                Intent i_history = new Intent(getApplicationContext(), HistoryActivity.class);
+                startActivity(i_history);
+                break;
+            case R.id.btn_apply:
+                updateProfile();
+                break;
+            default:
                 break;
         }
     }

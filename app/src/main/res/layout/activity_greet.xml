@@ -26,12 +26,14 @@
 
     <ImageView
         android:id="@+id/iv_logo"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
 
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tv_logo"
+
+        android:src="@drawable/ic_logo"
 
         android:transitionName="iv_logo"/>
 
@@ -39,14 +41,15 @@
         android:id="@+id/tv_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="bananas"
+        android:text="bananas™"
         android:textColor="#FFFFFF"
         android:textSize="39sp"
 
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/guideline"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginBottom="20dp"
+        android:fontFamily="@font/niramit"/>
 
     <Button
         android:id="@+id/btn_Signup"

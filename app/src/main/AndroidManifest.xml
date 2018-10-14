@@ -12,9 +12,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".GreetActivity">
@@ -41,18 +41,24 @@
                 android:resource="@xml/paths" />
         </provider>
 
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".ProfileActivity" />
 
-        <meta-data android:name="com.snapchat.kit.sdk.clientId" android:value="c5910f6c-83e0-4562-80a2-a6f9cd2b3c16" />
-        <meta-data android:name="com.snapchat.kit.sdk.redirectUrl" android:value="makeamericafitagain://snap-kit/oauth2" />
-        <meta-data android:name="com.snapchat.kit.sdk.scopes" android:resource="@array/snap_connect_scopes" /> <!-- This should be a string array of scopes !-->
+        <meta-data
+            android:name="com.snapchat.kit.sdk.clientId"
+            android:value="c5910f6c-83e0-4562-80a2-a6f9cd2b3c16" />
+        <meta-data
+            android:name="com.snapchat.kit.sdk.redirectUrl"
+            android:value="makeamericafitagain://snap-kit/oauth2" />
+        <meta-data
+            android:name="com.snapchat.kit.sdk.scopes"
+            android:resource="@array/snap_connect_scopes" /> <!-- This should be a string array of scopes ! -->
 
         <activity
             android:name="com.snapchat.kit.sdk.SnapKitActivity"
-            android:launchMode="singleTask"
-            >
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!--
@@ -61,16 +67,19 @@
                         android:scheme="myapp"
                         android:host="abc"
                         android:path="/xy/z"
-                !-->
+                !
+                -->
                 <data
-                    android:scheme="makeamericafitagain"
                     android:host="snap-kit"
                     android:path="/oauth2"
-                    />
+                    android:scheme="makeamericafitagain" />
             </intent-filter>
-
         </activity>
-
+        <activity
+            android:name=".HistoryActivity"
+            android:label="@string/title_activity_history"
+            android:parentActivityName=".ProfileActivity"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
