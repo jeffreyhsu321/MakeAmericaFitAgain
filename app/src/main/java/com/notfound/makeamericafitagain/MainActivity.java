@@ -323,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements
 
                     try {
                         File photo =  new File(photoURI.getPath());
-                        Log.d("PETER", photoURI.get());
+                        Log.d("PETER", photoURI.getPath());
                         photoFile = snapMediaFactory.getSnapPhotoFromFile(photo);
                     } catch (SnapMediaSizeException e) {
                         e.printStackTrace();
