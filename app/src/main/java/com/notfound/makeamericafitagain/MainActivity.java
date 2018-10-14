@@ -26,6 +26,13 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -73,10 +80,19 @@ public class MainActivity extends AppCompatActivity implements
 
     //saving photo to Firebase
     Uri photoURI;
+    FirebaseAuth mAuth;
+    FirebaseUser mUser;
     FirebaseStorage storage;
-    StorageReference storageRef,imageRef;
-    ProgressDialog progressDialog;
+    StorageReference storageRef;
+    DatabaseReference refRoot;
+    DatabaseReference refUser;
+
+    StorageReference foodRef;
+    StorageReference foodImageRef;
     UploadTask uploadTask;
+
+
+    boolean hasMadeMeal = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,8 +108,16 @@ public class MainActivity extends AppCompatActivity implements
         mContext = this.getApplicationContext();
         dialog = new ProgressDialog(this);
 
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
+        refRoot = FirebaseDatabase.getInstance().getReference();
+        refUser = refRoot.child(mUser.getUid());
+
+        foodRef = storageRef.child("food.jpg");
+        foodImageRef = storageRef.child("images/food.jpg");
+
 
         //attach listener
         btn_determine.setOnClickListener(this);
@@ -111,6 +135,10 @@ public class MainActivity extends AppCompatActivity implements
 
         createFoodList(result);
         dialog.dismiss();
+
+        //upload
+        uploadImage(iv_test);
+
         //intent to result activity
         Intent i_result = new Intent(this, ResultActivity.class);
         startActivity(i_result);
@@ -128,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements
 
         //conversion and filling
         int list_size = result.get(0).data().size();
-        for(int i = 0; i < list_size; i++){
+        for(int i = 0; i < 5; i++){
             //instantiate food object and append
             list_foods.add(new Food(result.get(0).data().get(i).name()));
         }
@@ -288,9 +316,9 @@ public class MainActivity extends AppCompatActivity implements
 
         btn_determine.setVisibility(View.VISIBLE);
         btn_determine.bringToFront();
-        btn_picture.setVisibility(View.INVISIBLE);
         btn_profile.bringToFront();
         btn_snap.bringToFront();
+        btn_picture.bringToFront();
     }
 
 
@@ -299,41 +327,55 @@ public class MainActivity extends AppCompatActivity implements
      * @param view
      */
     public void uploadImage(View view) {
-        //create reference to images folder and assing a name to the file that will be uploaded
-        imageRef = storageRef.child("images/"+photoURI.getLastPathSegment());
-        //creating and showing progress dialog
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMax(100);
-        progressDialog.setMessage("Uploading...");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.show();
-        progressDialog.setCancelable(false);
-        //starting upload
-        uploadTask = imageRef.putFile(photoURI);
-        // Observe state change events such as progress, pause, and resume
-        uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                //sets and increments value of progressbar
-                progressDialog.incrementProgressBy((int) progress);
-            }
-        });
+
+        //upload image
+        StorageReference riversRef = storageRef.child("images/"+photoURI.getLastPathSegment());
+        uploadTask = riversRef.putFile(photoURI);
+
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-                Toast.makeText(getApplicationContext(),"Error in uploading!",Toast.LENGTH_SHORT).show();
-                progressDialog.dismiss();
+                Toast.makeText(getApplicationContext(), "Upload failed. Please contact support", Toast.LENGTH_SHORT).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                Toast.makeText(getApplicationContext(),"Upload successful",Toast.LENGTH_SHORT).show();
-                progressDialog.dismiss();
-                //showing the uploaded image in ImageView using the download url
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                // ...
+                Toast.makeText(getApplicationContext(), "Upload successful!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        hasMadeMeal = false;
+
+        //update database markers
+        refUser.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(hasMadeMeal){
+                    return;
+                }
+
+                //create new meal object
+                Meal meal = new Meal(list_foods, Integer.toString((int)dataSnapshot.child("meals").getChildrenCount()+1), photoURI.getLastPathSegment());
+                String index = meal.getIndex();
+                String image_name = meal.getImage_name();
+
+                //fill out meal object in firebase
+                DatabaseReference refMeal = refUser.child("meals").child(index);
+                refMeal.setValue(list_foods);
+                refUser.child("meals").child(index).child("image_name").setValue(image_name.replace(".jpg",""));
+
+                hasMadeMeal = true;
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), "Error occurred. Please contact support", Toast.LENGTH_SHORT).show();
+                return;
             }
         });
     }
@@ -343,13 +385,14 @@ public class MainActivity extends AppCompatActivity implements
         switch(v.getId()){
 
             case R.id.btn_determine:
-                //upload
-                uploadImage(iv_test );
 
                 //start dialog
                 dialog.setMessage("Feeding...");
                 dialog.show();
+
+                //send image to Clarifai
                 new BackgroundNetworking().execute();
+
                 break;
             case R.id.btn_picture:
                 dispatchTakePictureIntent();

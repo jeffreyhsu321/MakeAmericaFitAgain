@@ -109,7 +109,7 @@ public class SignupActivity extends AppCompatActivity implements
                                 dialog.dismiss();
 
                                 //toast
-                                Toast.makeText(getApplicationContext(), "You have successfully joined Plates!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "You have successfully joined bananas!", Toast.LENGTH_SHORT).show();
 
                                 //init user data
                                 initUserData(email, password);
