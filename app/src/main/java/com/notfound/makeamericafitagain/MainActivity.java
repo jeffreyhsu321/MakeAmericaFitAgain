@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Debug;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,6 +29,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.snapchat.kit.sdk.SnapCreative;
+import com.snapchat.kit.sdk.SnapLogin;
+import com.snapchat.kit.sdk.creative.api.SnapCreativeKitApi;
+import com.snapchat.kit.sdk.creative.media.SnapMediaFactory;
+import com.snapchat.kit.sdk.creative.media.SnapPhotoFile;
+import com.snapchat.kit.sdk.creative.models.SnapLiveCameraContent;
+import com.snapchat.kit.sdk.login.models.MeData;
+import com.snapchat.kit.sdk.login.models.UserDataResponse;
+import com.snapchat.kit.sdk.login.networking.FetchUserDataCallback;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -61,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements
     ImageButton btn_profile;
     ImageButton btn_snap;
     ImageView iv_test;
-
+    boolean isUserLoggedIn;
     Bitmap imageBitmap;
 
     private Context mContext;
@@ -95,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements
         btn_snap.setOnClickListener(this);
 
         //parse();
+        isUserLoggedIn = SnapLogin.isUserLoggedIn(mContext);
     }
 
     public void parse()
@@ -343,6 +354,72 @@ public class MainActivity extends AppCompatActivity implements
                 Intent i_profile = new Intent(getApplicationContext(), ProfileActivity.class);
                 startActivity(i_profile);
                 break;
+            case R.id.btn_snap:
+                if(isUserLoggedIn) {
+                    //already logged in
+
+                    Toast.makeText(mContext, "Already logged in", Toast.LENGTH_LONG).show();
+                    SnapMediaFactory snapMediaFactory = SnapCreative.getMediaFactory(mContext);
+                    SnapCreativeKitApi snapCreativeKitApi = SnapCreative.getApi(mContext);
+                    SnapPhotoFile photoFile;
+
+                    /*try {
+                        File photo =  new File(photoURI.getPath());
+                        Log.d("PETER", photoURI.getPath());
+                        photoFile = snapMediaFactory.getSnapPhotoFromFile(photo);
+                    } catch (SnapMediaSizeException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    SnapPhotoContent snapPhotoContent = new SnapPhotoContent(photoFile);*/
+                    SnapLiveCameraContent snapLiveCameraContent = new SnapLiveCameraContent();
+                    snapCreativeKitApi.send(snapLiveCameraContent);
+                }
+                else {
+                    //yet to log in
+
+                    SnapLogin.getAuthTokenManager(mContext).startTokenGrant();
+                    isUserLoggedIn = SnapLogin.isUserLoggedIn(mContext);
+
+                    if(isUserLoggedIn) {
+                        String query = "{me{bitmoji{avatar},displayName}}";
+
+                        SnapLogin.fetchUserData(mContext, query, null, new FetchUserDataCallback() {
+                            @Override
+                            public void onSuccess(@Nullable UserDataResponse userDataResponse) {
+                                if (userDataResponse == null || userDataResponse.getData() == null) {
+                                    return;
+                                }
+
+                                MeData meData = userDataResponse.getData().getMe();
+                                if (meData == null) {
+                                    return;
+                                }
+
+                                Toast.makeText(mContext, "Logged in as " +
+                                                (userDataResponse.getData().getMe().getDisplayName()),
+                                        Toast.LENGTH_LONG).show();
+
+                                /*
+                                if (meData.getBitmojiData() != null) {
+                                    getSupportFragmentManager().beginTransaction()
+                                            .replace(R.id.btn_profile, new BitmojiIconFragment())
+                                            .commit();
+                                }*/
+                            }
+
+                            @Override
+                            public void onFailure(boolean isNetworkError, int statusCode) {
+
+                            }
+                        });
+                    }
+                    else {
+                        Toast.makeText(mContext, "Logged in failed", Toast.LENGTH_LONG);
+                    }
+                }
+                break;
+
             default:
                 break;
 
