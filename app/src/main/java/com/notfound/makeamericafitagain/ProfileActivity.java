@@ -46,6 +46,8 @@ public class ProfileActivity extends AppCompatActivity implements
     int calorieMeter = 0;
     int calorieMeterStep;
 
+    int speed;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +83,8 @@ public class ProfileActivity extends AppCompatActivity implements
                 calorieMeter = 0;
                 calorieMeterStep = calorie_today / progress;
 
+                speed = 10;
+
                 //animated progress
                 final Handler mUpdater = new Handler();
                 Runnable mUpdateView = new Runnable() {
@@ -96,7 +100,7 @@ public class ProfileActivity extends AppCompatActivity implements
                         } else {
                             mUpdater.removeCallbacksAndMessages(null);
                         }
-                        mUpdater.postDelayed(this, 10);
+                        mUpdater.postDelayed(this, speed--);
                     }
                 };
                 mUpdateView.run();

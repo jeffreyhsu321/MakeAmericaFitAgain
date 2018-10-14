@@ -10,16 +10,16 @@
     <!-- CLARIFAI BUTTON -->
     <ImageButton
         android:id="@+id/btn_determine"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:padding="12dp"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:padding="2dp"
         android:background="@drawable/btn_square_accent"
         android:src="@drawable/ic_clarifai_primary"
         android:contentDescription="clarifai's button"
-        android:scaleType="centerCrop"
+        android:scaleType="centerInside"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:visibility="invisible"/>
 
     <!-- TAKE PHOTO BUTTON -->
@@ -28,9 +28,10 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:padding="12dp"
-        android:background="@drawable/btn_square_accent"
+        android:background="@drawable/btn_border_accent"
         android:src="@drawable/ic_camera"
         android:contentDescription="take photo"
+        android:layout_margin="5dp"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -43,12 +44,13 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:padding="12dp"
-        android:background="@drawable/btn_square_white"
+        android:background="@drawable/btn_border_white"
         android:src="@drawable/ic_profile"
         android:contentDescription="profile"
+        android:layout_margin="5dp"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/btn_picture"/>
+        app:layout_constraintRight_toLeftOf="@id/btn_picture"/>
 
     <!-- SNAP BUTTON -->
     <ImageButton
@@ -56,12 +58,13 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:padding="12dp"
-        android:background="@drawable/btn_square_white"
+        android:background="@drawable/btn_border_white"
         android:src="@drawable/ic_snapchat_primary"
         android:contentDescription="snapchat button"
+        android:layout_margin="5dp"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/btn_picture"/>
+        app:layout_constraintLeft_toRightOf="@id/btn_picture"/>
 
 
     <!-- FOOD IMAGE -->
