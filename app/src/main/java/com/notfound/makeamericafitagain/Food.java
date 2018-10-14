@@ -4,7 +4,7 @@ public class Food {
 
     //attr
     String name;
-    int calories; //calories per a hundred grams
+    double calories; //calories per a hundred grams
 
     public Food() {
         this("N/A", 0);
@@ -14,7 +14,7 @@ public class Food {
         this(name, 0);
     }
 
-    public Food(String name, int calories){
+    public Food(String name, double calories){
         this.name = name;
         this.calories = calories;
     }
@@ -23,11 +23,11 @@ public class Food {
         return this.name;
     }
 
-    public int getCalories() {
+    public double getCalories() {
         return calories;
     }
 
-    public void setCalories(int calories) {
+    public void setCalories(double calories) {
         this.calories = calories;
     }
 

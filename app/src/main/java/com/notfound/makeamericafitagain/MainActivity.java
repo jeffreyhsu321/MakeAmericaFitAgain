@@ -3,46 +3,56 @@ package com.notfound.makeamericafitagain;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Bundle;
+import android.os.Debug;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.snapchat.kit.sdk.SnapCreative;
 import com.snapchat.kit.sdk.SnapLogin;
-import com.snapchat.kit.sdk.bitmoji.ui.BitmojiIconFragment;
 import com.snapchat.kit.sdk.creative.api.SnapCreativeKitApi;
-import com.snapchat.kit.sdk.creative.exceptions.SnapMediaSizeException;
 import com.snapchat.kit.sdk.creative.media.SnapMediaFactory;
 import com.snapchat.kit.sdk.creative.media.SnapPhotoFile;
 import com.snapchat.kit.sdk.creative.models.SnapLiveCameraContent;
-import com.snapchat.kit.sdk.creative.models.SnapPhotoContent;
 import com.snapchat.kit.sdk.login.models.MeData;
 import com.snapchat.kit.sdk.login.models.UserDataResponse;
 import com.snapchat.kit.sdk.login.networking.FetchUserDataCallback;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
 
 import clarifai2.api.ClarifaiBuilder;
 import clarifai2.api.ClarifaiClient;
@@ -61,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements
     ImageButton btn_profile;
     ImageButton btn_snap;
     ImageView iv_test;
-
+    boolean isUserLoggedIn;
     Bitmap imageBitmap;
 
     private Context mContext;
@@ -73,10 +83,6 @@ public class MainActivity extends AppCompatActivity implements
     String mCurrentPhotoPath;
 
     ProgressDialog dialog;
-
-    //Snapchat
-    boolean isUserLoggedIn;
-    Uri photoURI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,9 +104,48 @@ public class MainActivity extends AppCompatActivity implements
         btn_picture.setOnClickListener(this);
         btn_snap.setOnClickListener(this);
 
+        //parse();
         isUserLoggedIn = SnapLogin.isUserLoggedIn(mContext);
     }
 
+    public void parse()
+    {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser mUser = mAuth.getCurrentUser();
+        DatabaseReference refRoot = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference refUser = refRoot.child(mUser.getUid());
+
+        try {
+            AssetManager assetManager = getAssets();
+
+            InputStream in = assetManager.open("Temp.csv");
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+            StringTokenizer st = null;
+            ArrayList<Food> foodList = new ArrayList<Food>();
+            while (br.ready()) {
+                try {
+                    st = new StringTokenizer(br.readLine(), ",");
+                    String name = st.nextToken().split("\\(")[0];
+                    double calories = Double.parseDouble(st.nextToken().split(" ")[0]);
+                    Log.d("filesbla", name + " " + calories);
+                    Food f = new Food(name, calories);
+                    foodList.add(f);
+                } catch (NoSuchElementException e) {
+                      continue;
+                } catch (NumberFormatException e) {
+                     continue;
+                }
+            }
+            refRoot.child("masterlist").setValue(foodList);
+            Log.d("filesbla", "Successful");
+        }
+        catch(IOException e)
+        {
+            Log.d("testing", e.toString());
+        }
+
+    }
 
     /**
      * retrieve result (List<Concepts> from BackgroundNetworking)
@@ -210,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                photoURI = FileProvider.getUriForFile(this,
+                Uri photoURI = FileProvider.getUriForFile(this,
                         "com.notfound.android.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
@@ -374,6 +419,7 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 }
                 break;
+
             default:
                 break;
 
