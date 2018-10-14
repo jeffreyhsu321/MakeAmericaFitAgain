@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -41,6 +42,8 @@ import clarifai2.dto.model.Model;
 import clarifai2.dto.model.output.ClarifaiOutput;
 import clarifai2.dto.prediction.Concept;
 
+import com.snapchat.kit.sdk.SnapLogin;
+
 public class MainActivity extends AppCompatActivity implements
         View.OnClickListener{
 
@@ -63,6 +66,9 @@ public class MainActivity extends AppCompatActivity implements
 
     ProgressDialog dialog;
 
+    //Snapchat
+    boolean isUserLoggedIn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements
         btn_profile.setOnClickListener(this);
         btn_picture.setOnClickListener(this);
         btn_snap.setOnClickListener(this);
+
+        isUserLoggedIn = SnapLogin.isUserLoggedIn(mContext);
     }
 
 
@@ -292,6 +300,15 @@ public class MainActivity extends AppCompatActivity implements
                 Intent i_profile = new Intent(getApplicationContext(), ProfileActivity.class);
                 startActivity(i_profile);
                 break;
+            case R.id.btn_snap:
+                if(isUserLoggedIn) {
+                    Toast.makeText(getApplicationContext(), "Already logged in", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    SnapLogin.getAuthTokenManager(mContext).startTokenGrant();
+                    isUserLoggedIn = SnapLogin.isUserLoggedIn(mContext);
+                }
+
             default:
                 break;
 
