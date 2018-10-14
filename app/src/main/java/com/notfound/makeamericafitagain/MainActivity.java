@@ -6,24 +6,32 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Debug;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.snapchat.kit.sdk.SnapCreative;
+import com.snapchat.kit.sdk.SnapLogin;
+import com.snapchat.kit.sdk.bitmoji.ui.BitmojiIconFragment;
+import com.snapchat.kit.sdk.creative.api.SnapCreativeKitApi;
+import com.snapchat.kit.sdk.creative.exceptions.SnapMediaSizeException;
+import com.snapchat.kit.sdk.creative.media.SnapMediaFactory;
+import com.snapchat.kit.sdk.creative.media.SnapPhotoFile;
+import com.snapchat.kit.sdk.creative.models.SnapPhotoContent;
+import com.snapchat.kit.sdk.login.models.MeData;
+import com.snapchat.kit.sdk.login.models.UserDataResponse;
+import com.snapchat.kit.sdk.login.networking.FetchUserDataCallback;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -42,20 +50,6 @@ import clarifai2.dto.input.ClarifaiInput;
 import clarifai2.dto.model.Model;
 import clarifai2.dto.model.output.ClarifaiOutput;
 import clarifai2.dto.prediction.Concept;
-
-import com.snapchat.kit.sdk.SnapCreative;
-import com.snapchat.kit.sdk.SnapLogin;
-import com.snapchat.kit.sdk.creative.api.SnapCreativeKitApi;
-import com.snapchat.kit.sdk.creative.exceptions.SnapMediaSizeException;
-import com.snapchat.kit.sdk.creative.media.SnapMediaFactory;
-import com.snapchat.kit.sdk.creative.media.SnapPhotoFile;
-import com.snapchat.kit.sdk.creative.models.SnapLiveCameraContent;
-import com.snapchat.kit.sdk.creative.models.SnapPhotoContent;
-import com.snapchat.kit.sdk.login.models.MeData;
-import com.snapchat.kit.sdk.login.models.UserDataResponse;
-import com.snapchat.kit.sdk.login.networking.FetchUserDataCallback;
-
-import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity implements
         View.OnClickListener{
@@ -355,12 +349,6 @@ public class MainActivity extends AppCompatActivity implements
                                 Toast.makeText(mContext, "Logged in as " +
                                         (userDataResponse.getData().getMe().getDisplayName()),
                                         Toast.LENGTH_SHORT).show();
-                                /*
-                                if (meData.getBitmojiData() != null) {
-                                    Glide.with(getContext())
-                                            .load(meData.getBitmojiData().getAvatar())
-                                            .into(mBitmojiImageView);
-                                }*/
                             }
 
                             @Override
@@ -377,6 +365,21 @@ public class MainActivity extends AppCompatActivity implements
             default:
                 break;
 
+        }
+    }
+
+    /**
+     * @param encodedString
+     * @return bitmap (from given string)
+     */
+    public Bitmap StringToBitMap(String encodedString){
+        try{
+            byte [] encodeByte=Base64.decode(encodedString,Base64.DEFAULT);
+            Bitmap bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        } catch(Exception e){
+            e.getMessage();
+            return null;
         }
     }
 }
