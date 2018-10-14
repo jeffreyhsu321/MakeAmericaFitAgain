@@ -121,9 +121,9 @@ public class MainActivity extends AppCompatActivity implements
                     Food f = new Food(name, calories);
                     foodList.add(f);
                 } catch (NoSuchElementException e) {
-                    //  continue;
+                      continue;
                 } catch (NumberFormatException e) {
-                    // continue;
+                     continue;
                 }
             }
             refRoot.child("masterlist").setValue(foodList);
