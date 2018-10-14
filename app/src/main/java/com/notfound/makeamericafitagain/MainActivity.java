@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Debug;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +23,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -63,6 +71,13 @@ public class MainActivity extends AppCompatActivity implements
 
     ProgressDialog dialog;
 
+    //saving photo to Firebase
+    Uri photoURI;
+    FirebaseStorage storage;
+    StorageReference storageRef,imageRef;
+    ProgressDialog progressDialog;
+    UploadTask uploadTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements
         iv_test = findViewById(R.id.iv_test);
         mContext = this.getApplicationContext();
         dialog = new ProgressDialog(this);
+
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
         //attach listener
         btn_determine.setOnClickListener(this);
@@ -193,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
+                photoURI = FileProvider.getUriForFile(this,
                         "com.notfound.android.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
@@ -276,10 +294,58 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
+    /**
+     * upload image to firebase
+     * @param view
+     */
+    public void uploadImage(View view) {
+        //create reference to images folder and assing a name to the file that will be uploaded
+        imageRef = storageRef.child("images/"+photoURI.getLastPathSegment());
+        //creating and showing progress dialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMax(100);
+        progressDialog.setMessage("Uploading...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.show();
+        progressDialog.setCancelable(false);
+        //starting upload
+        uploadTask = imageRef.putFile(photoURI);
+        // Observe state change events such as progress, pause, and resume
+        uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                //sets and increments value of progressbar
+                progressDialog.incrementProgressBy((int) progress);
+            }
+        });
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+                Toast.makeText(getApplicationContext(),"Error in uploading!",Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                Toast.makeText(getApplicationContext(),"Upload successful",Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+                //showing the uploaded image in ImageView using the download url
+            }
+        });
+    }
+
+
     public void onClick(View v){
         switch(v.getId()){
 
             case R.id.btn_determine:
+                //upload
+                uploadImage(iv_test );
+
                 //start dialog
                 dialog.setMessage("Feeding...");
                 dialog.show();
